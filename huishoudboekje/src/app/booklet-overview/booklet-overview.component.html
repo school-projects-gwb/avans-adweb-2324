@@ -1,0 +1,6 @@
+<h2>Household Booklets</h2>
+<ul>
+  <li *ngFor="let booklet of booklets">
+    <a [routerLink]="['/booklets', booklet.id]">{{ booklet.name }}</a>
+  </li>
+</ul>
