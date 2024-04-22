@@ -3,9 +3,6 @@ import { BookletOverviewComponent } from './booklet-overview/booklet-overview.co
 import { BookletDetailComponent } from './booklet-detail/booklet-detail.component'; 
 
 export const routes: Routes = [
-  // Route for the booklet overview page
-  { path: 'booklets', component: BookletOverviewComponent },
-  // Route for the booklet detail page, accessed by booklet ID
+  { path: '', component: BookletOverviewComponent },
   { path: 'booklets/:id', component: BookletDetailComponent },
-  // Add more routes as needed
 ];
