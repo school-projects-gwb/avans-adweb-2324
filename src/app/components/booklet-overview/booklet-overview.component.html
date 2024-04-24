@@ -1,10 +1,18 @@
-<h2>Household Booklets</h2>
-<ul>
-  <li *ngFor="let booklet of booklets">
-    <button type="button">
-      <span class="badge">{{booklet.id}}</span>
-      <span class="name">{{booklet.name}}</span>
-    </button>
-  </li>
-  test
-</ul>
+<section class="p-16 hellokitty-background">
+  <div class="flex flex-row items-center"> 
+    <img class="w-1/12" src="../../../assets/images/hellokitty.png"/>
+    <h2 class="title ml-8">Mijn huishoudboekjes</h2>
+  </div>
+  <div class="grid grid-cols-2 gap-8 mt-8 max-h-72 overflow-y-scroll">
+    <div *ngFor="let booklet of booklets">
+      <button type="button" class="text-left bg-background p-6 text-dark rounded-xl container-border w-full">
+        <h3>{{ booklet.name }}</h3>
+        <p>{{ booklet.description }}</p>
+      </button>
+    </div>
+  </div>
+</section>
+<section class="relative mt-8 bg-white px-16 py-8 container-border flex justify-center items-center">
+  <img class="w-24 absolute left-12" src="../../../assets/images/hellokitty_dog.png"/>
+  <button (click)="addBooklet()" class="button text-xl ml-8">Huishoudboekje toevoegen</button>
+</section>

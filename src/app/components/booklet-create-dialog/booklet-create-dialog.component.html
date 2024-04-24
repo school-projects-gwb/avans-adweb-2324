@@ -1,0 +1,22 @@
+<div class="p-4">
+  <mat-form-field>
+    <mat-label>Naam</mat-label>
+    <input matInput cdkFocusInitial [(ngModel)]="data.booklet.name" />
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Omschrijving</mat-label>
+    <textarea matInput [(ngModel)]="data.booklet.description"></textarea>
+  </mat-form-field>
+
+  <div class="flex flex-col">
+    <button
+      mat-button
+      [mat-dialog-close]="{ booklet: data.booklet }"
+      class="button"
+    >
+      Toevoegen
+    </button>
+    <button mat-button (click)="cancel()" class="mt-4 underline">Annuleren</button>
+  </div>
+</div>

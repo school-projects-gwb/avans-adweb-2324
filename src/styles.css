@@ -1,3 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	:root {
+		--color-bg: 244 215 243;
+        --color-accent: 158 43 37;
+        --color-border: 208 167 206;
+        --color-text-light: 254 251 254;
+        --color-text-dark: 91 64 43;
+	}
+}
+
+* {
+    font-family: "Inter";
+}
+
+h3 {
+    @apply font-semibold text-xl;
+}
+
+.title {
+    font-family: "Tinos";
+    -webkit-text-stroke-width: .2rem;
+    -webkit-text-stroke-color: #FF95E1;
+    @apply text-6xl font-bold text-white tracking-normal italic ;
+}
+
+.container-border {
+    @apply border-4 border-border rounded-xl
+}
+
+.button {
+    @apply bg-accent py-4 px-6 text-light rounded-full font-semibold;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
