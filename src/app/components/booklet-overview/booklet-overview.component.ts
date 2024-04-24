@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { BookletService } from '../../services/booklet.service';
 import { Booklet } from '../../models/booklet.models';
 import { RouterModule } from '@angular/router';
@@ -11,6 +11,7 @@ import {
   BookletCreateDialogComponent,
   BookletDialogResult,
 } from '../booklet-create-dialog/booklet-create-dialog.component';
+import { Firestore, collection, getDocs } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-booklet-overview',
@@ -21,6 +22,7 @@ import {
 })
 export class BookletOverviewComponent implements OnInit {
   booklets: Booklet[] = [];
+  firestore = inject(Firestore);
 
   constructor(
     private bookletService: BookletService,
@@ -29,6 +31,10 @@ export class BookletOverviewComponent implements OnInit {
 
   ngOnInit(): void {
     this.getBooklets();
+
+    getDocs(collection(this.firestore, "booklet")).then((response) => {
+      console.log(response.docs)
+    })
   }
 
   getBooklets(): void {
@@ -59,6 +65,30 @@ export class BookletOverviewComponent implements OnInit {
         console.log(result);
         if (!result) return;
         this.booklets.push(result.booklet);
+      });
+  }
+
+  editBooklet(booklet: Booklet): void {
+    const dialogRef = this.dialog.open(BookletCreateDialogComponent, {
+      width: '270px',
+      data: {
+        booklet,
+        enableDelete: true,
+      },
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe((result: BookletDialogResult | undefined) => {
+        if (!result) {
+          return;
+        }
+
+        const bookletIndex = this.booklets.indexOf(booklet);
+        if (result.delete) {
+          this.booklets.splice(bookletIndex, 1);
+        } else {
+          this.booklets[bookletIndex] = booklet;
+        }
       });
   }
 }

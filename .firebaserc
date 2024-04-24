@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "huishoudboekje-79473": {
+      "hosting": {
+        "huishoudboekje": [
+          "huishoudboekje-79473"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "huishoudboekje-79473"
+  }
+}

@@ -5,7 +5,7 @@
   </div>
   <div class="grid grid-cols-2 gap-8 mt-8 max-h-72 overflow-y-scroll">
     <div *ngFor="let booklet of booklets">
-      <button type="button" class="text-left bg-background p-6 text-dark rounded-xl container-border w-full">
+      <button (click)="editBooklet(booklet)" type="button" class="text-left bg-background p-6 text-dark rounded-xl container-border w-full">
         <h3>{{ booklet.name }}</h3>
         <p>{{ booklet.description }}</p>
       </button>

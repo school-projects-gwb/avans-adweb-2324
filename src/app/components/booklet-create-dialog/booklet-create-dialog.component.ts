@@ -3,11 +3,12 @@ import { Booklet } from '../../models/booklet.models';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-booklet-create-dialog',
   standalone: true,
-  imports: [FormsModule, MatInputModule, MatDialogModule],
+  imports: [NgIf, FormsModule, MatInputModule, MatDialogModule],
   templateUrl: './booklet-create-dialog.component.html',
   styleUrl: './booklet-create-dialog.component.css'
 })
