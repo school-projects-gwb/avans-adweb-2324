@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { BookletOverviewComponent } from './booklet-overview/booklet-overview.component';
+import { BookletOverviewComponent } from './components/booklet-overview/booklet-overview.component';
 
 @Component({
   selector: 'app-root',

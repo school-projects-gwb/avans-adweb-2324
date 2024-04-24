@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { BookletService } from '../booklet.service'; 
-import { Booklet } from '../booklet.models'; 
+import { BookletService } from '../../services/booklet.service'; 
+import { Booklet } from '../../models/booklet.models'; 
 
 @Component({
   selector: 'app-booklet-detail',
