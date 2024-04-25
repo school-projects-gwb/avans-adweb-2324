@@ -24,6 +24,7 @@ export class AuthComponent implements OnInit {
   formGroup!: FormGroup;
   isLogin: boolean;
   firestore = inject(Firestore);
+  errorMessage!: string;
 
   constructor(
     private authService: AuthService,
@@ -45,14 +46,12 @@ export class AuthComponent implements OnInit {
   async onSubmit(userObject: User) {
     if (this.isLogin) {
       const result = await this.authService.login(userObject);
-      if (result != null) {
-        this.router.navigate(['/']);
-      }
+      if (result.isSuccess) this.router.navigate(['/']);
+      this.errorMessage = result.getErrorMessage();
     } else {
-      const result = this.authService.register(userObject);
-      if (result != null) {
-        this.router.navigate(['/']);
-      }
+      const result = await this.authService.register(userObject);
+      if ((await result).isSuccess) this.router.navigate(['/']);
+      this.errorMessage = result.getErrorMessage();
     }
   }
 

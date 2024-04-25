@@ -2,12 +2,10 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Booklet, bookletConverter } from '../models/booklet.models';
 import {
-  DocumentSnapshot,
   Firestore,
   addDoc,
   collection,
   doc,
-  getDocs,
   onSnapshot,
   query,
   updateDoc,
@@ -38,22 +36,6 @@ export class BookletService {
       name: booklet.name,
       description: booklet.description,
     });
-  }
-
-  async getBooklets(): Promise<Booklet[]> {
-    const q = query(
-      collection(this.firestore, 'booklets'),
-      where('isArchived', '==', false)
-    );
-
-    const snapshot = await getDocs(q);
-
-    const docs: Booklet[] = [];
-    snapshot.forEach((doc: DocumentSnapshot) => {
-      docs.push(bookletConverter.fromFirestore(doc, {}));
-    });
-
-    return docs;
   }
 
   async getBookletListener(): Promise<Observable<Booklet[]>> {

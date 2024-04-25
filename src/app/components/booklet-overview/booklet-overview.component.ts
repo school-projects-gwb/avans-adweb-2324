@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { BookletService } from '../../services/booklet.service';
 import { Booklet } from '../../models/booklet.models';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { NgFor } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +12,7 @@ import {
 } from '../booklet-create-dialog/booklet-create-dialog.component';
 import { Firestore } from '@angular/fire/firestore';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-booklet-overview',
@@ -21,29 +22,39 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./booklet-overview.component.css'],
 })
 export class BookletOverviewComponent implements OnInit, OnDestroy {
-  bookletSubscription: Subscription = new Subscription;
+  bookletSubscription: Subscription = new Subscription();
   booklets: Booklet[] = [];
   firestore = inject(Firestore);
 
   constructor(
     private bookletService: BookletService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.getBooklets();
-
-    this.bookletService.getBookletListener().then(observable => {
-      this.bookletSubscription = observable.subscribe(booklets => {
-        this.booklets = booklets;
+    this.authService
+      .getIsAuthenticatedListener()
+      .then((observable) => {
+        this.bookletSubscription = observable.subscribe((currentUserResult) => {
+          if (!currentUserResult.isLoggedIn) this.router.navigate(['/auth']);
+        });
+      })
+      .catch((error) => {
+        console.error('Error:', error);
       });
-    }).catch(error => {
-      console.error('Error fetching booklets:', error);
-    });
-  }
 
-  async getBooklets(): Promise<void> {
-    this.booklets = await this.bookletService.getBooklets();
+    this.bookletService
+      .getBookletListener()
+      .then((observable) => {
+        this.bookletSubscription = observable.subscribe((booklets) => {
+          this.booklets = booklets;
+        });
+      })
+      .catch((error) => {
+        console.error('Error fetching booklets:', error);
+      });
   }
 
   async addBooklet(): Promise<void> {
@@ -57,6 +68,7 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
       .afterClosed()
       .subscribe(async (result: BookletDialogResult | undefined) => {
         if (!result) return;
+        result.booklet.userId = this.authService.getAuthenticatedUserId();
         await this.bookletService.createBooklet(result.booklet);
       });
   }

@@ -4,8 +4,12 @@
   class="flex flex-col"
 >
   <mat-radio-group (change)="onChange($event)" class="flex flex-row">
-    <mat-radio-button [value]="0" checked>Inloggen met bestaand account</mat-radio-button>
-    <mat-radio-button [value]="1" class="ml-8">Nieuw account registreren</mat-radio-button>
+    <mat-radio-button [value]="0" checked
+      >Inloggen met bestaand account</mat-radio-button
+    >
+    <mat-radio-button [value]="1" class="ml-8"
+      >Nieuw account registreren</mat-radio-button
+    >
   </mat-radio-group>
   <mat-form-field class="mt-8">
     <input
@@ -24,8 +28,20 @@
     />
   </mat-form-field>
   <div>
-    <button mat-raised-button color="primary" type="submit" class="button" [disabled]="!formGroup.valid">
-      {{ isLogin ? 'Inloggen' : 'Registreren' }}
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      class="button"
+      [disabled]="!formGroup.valid"
+    >
+      {{ isLogin ? "Inloggen" : "Registreren" }}
     </button>
+  </div>
+  <div
+    *ngIf="errorMessage"
+    class="mt-4 font-bold text-red-600 bg-background text-lg p-4 rounded-xl"
+  >
+    {{ errorMessage }}
   </div>
 </form>
