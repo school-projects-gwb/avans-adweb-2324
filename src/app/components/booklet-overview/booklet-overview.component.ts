@@ -92,6 +92,10 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
     console.log(booklet.id);
   }
 
+  openArchive(): void {
+    this.router.navigate(['archive']);
+  }
+
   editBooklet(booklet: Booklet): void {
     const dialogRef = this.dialog.open(BookletCreateDialogComponent, {
       width: '270px',

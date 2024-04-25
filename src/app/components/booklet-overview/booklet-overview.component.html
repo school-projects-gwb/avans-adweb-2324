@@ -25,6 +25,13 @@
   <div *ngIf="booklets.length === 0" class="text-light text-lg font-semibold">
     Je hebt nog geen huishoudboekjes!
   </div>
+  <button
+    (click)="openArchive()"
+    type="button"
+    class="text-light underline mt-4"
+  >
+    Naar archief
+  </button>
 </section>
 <section
   class="relative mt-8 bg-white px-16 py-8 container-border flex justify-center items-center"

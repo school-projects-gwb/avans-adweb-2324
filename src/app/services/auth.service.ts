@@ -44,6 +44,7 @@ export class AuthService {
           result.isLoggedIn = true;
           result.userId = user.uid;
           result.email = user.email as string;
+          this.loggedInUserId = user.uid;
           observer.next(result);
         } else {
           observer.next(result);
