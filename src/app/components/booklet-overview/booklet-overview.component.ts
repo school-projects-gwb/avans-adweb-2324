@@ -1,8 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { BookletService } from '../../services/booklet.service';
 import { Booklet } from '../../models/booklet.models';
 import { RouterModule } from '@angular/router';
-import { BOOKLETS } from '../../mock-data/mock-booklets';
 import { NgFor } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
@@ -11,7 +10,8 @@ import {
   BookletCreateDialogComponent,
   BookletDialogResult,
 } from '../booklet-create-dialog/booklet-create-dialog.component';
-import { Firestore, collection, getDocs } from '@angular/fire/firestore';
+import { Firestore } from '@angular/fire/firestore';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-booklet-overview',
@@ -20,7 +20,8 @@ import { Firestore, collection, getDocs } from '@angular/fire/firestore';
   templateUrl: './booklet-overview.component.html',
   styleUrls: ['./booklet-overview.component.css'],
 })
-export class BookletOverviewComponent implements OnInit {
+export class BookletOverviewComponent implements OnInit, OnDestroy {
+  bookletSubscription: Subscription = new Subscription;
   booklets: Booklet[] = [];
   firestore = inject(Firestore);
 
@@ -32,27 +33,20 @@ export class BookletOverviewComponent implements OnInit {
   ngOnInit(): void {
     this.getBooklets();
 
-    getDocs(collection(this.firestore, "booklet")).then((response) => {
-      console.log(response.docs)
-    })
+    this.bookletService.getBookletListener().then(observable => {
+      this.bookletSubscription = observable.subscribe(booklets => {
+        this.booklets = booklets;
+      });
+    }).catch(error => {
+      console.error('Error fetching booklets:', error);
+    });
   }
 
-  getBooklets(): void {
-    this.bookletService.getBooklets().subscribe(
-      (booklets) => {
-        this.booklets = BOOKLETS;
-        console.log('Fetched booklets:', booklets);
-        // TODO: Filter booklets based on logged-in user
-        // Edge case: If no booklets are returned, consider displaying a message or redirecting the user
-      },
-      (error) => {
-        console.error('Error fetching booklets:', error); // Error handling and logging
-        // Suggestion: Implement user-friendly error handling here, e.g., display a message in the UI
-      }
-    );
+  async getBooklets(): Promise<void> {
+    this.booklets = await this.bookletService.getBooklets();
   }
 
-  addBooklet(): void {
+  async addBooklet(): Promise<void> {
     const dialogRef = this.dialog.open(BookletCreateDialogComponent, {
       width: '270px',
       data: {
@@ -61,10 +55,9 @@ export class BookletOverviewComponent implements OnInit {
     });
     dialogRef
       .afterClosed()
-      .subscribe((result: BookletDialogResult | undefined) => {
-        console.log(result);
+      .subscribe(async (result: BookletDialogResult | undefined) => {
         if (!result) return;
-        this.booklets.push(result.booklet);
+        await this.bookletService.createBooklet(result.booklet);
       });
   }
 
@@ -83,12 +76,15 @@ export class BookletOverviewComponent implements OnInit {
           return;
         }
 
-        const bookletIndex = this.booklets.indexOf(booklet);
         if (result.delete) {
-          this.booklets.splice(bookletIndex, 1);
+          this.bookletService.archiveBooklet(booklet);
         } else {
-          this.booklets[bookletIndex] = booklet;
+          this.bookletService.updateBooklet(booklet);
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    this.bookletSubscription.unsubscribe();
   }
 }
