@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { BookletService } from '../../services/booklet.service';
 import { Booklet } from '../../models/booklet.models';
 import { Router, RouterModule } from '@angular/router';
-import { NgFor } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
@@ -17,7 +17,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-booklet-overview',
   standalone: true,
-  imports: [RouterModule, NgFor, MatDialogModule, MatInputModule, FormsModule],
+  imports: [RouterModule, NgIf, NgFor, MatDialogModule, MatInputModule, FormsModule],
   templateUrl: './booklet-overview.component.html',
   styleUrls: ['./booklet-overview.component.css'],
 })
@@ -39,21 +39,21 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
       .then((observable) => {
         this.bookletSubscription = observable.subscribe((currentUserResult) => {
           if (!currentUserResult.isLoggedIn) this.router.navigate(['/auth']);
+
+          this.bookletService
+            .getBookletListener(currentUserResult.userId)
+            .then((observable) => {
+              this.bookletSubscription = observable.subscribe((booklets) => {
+                this.booklets = booklets;
+              });
+            })
+            .catch((error) => {
+              console.error('Error fetching booklets:', error);
+            });
         });
       })
       .catch((error) => {
         console.error('Error:', error);
-      });
-
-    this.bookletService
-      .getBookletListener()
-      .then((observable) => {
-        this.bookletSubscription = observable.subscribe((booklets) => {
-          this.booklets = booklets;
-        });
-      })
-      .catch((error) => {
-        console.error('Error fetching booklets:', error);
       });
   }
 
@@ -71,6 +71,11 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
         result.booklet.userId = this.authService.getAuthenticatedUserId();
         await this.bookletService.createBooklet(result.booklet);
       });
+  }
+
+  openBooklet(booklet: Booklet): void {
+    // TODO navigate
+    console.log(booklet.id);
   }
 
   editBooklet(booklet: Booklet): void {

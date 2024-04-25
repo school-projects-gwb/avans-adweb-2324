@@ -1,18 +1,40 @@
 <section class="p-16 hellokitty-background">
-  <div class="flex flex-row items-center"> 
-    <img class="w-1/12" src="../../../assets/images/hellokitty.png" alt="Hello kitty"/>
+  <div class="flex flex-row items-center">
+    <img
+      class="w-1/12"
+      src="../../../assets/images/hellokitty.png"
+      alt="Hello kitty"
+    />
     <h2 class="title ml-8">Mijn huishoudboekjes</h2>
   </div>
   <div class="grid grid-cols-2 gap-8 mt-8 max-h-72 overflow-y-scroll">
-    <div *ngFor="let booklet of booklets">
-      <button (click)="editBooklet(booklet)" type="button" class="text-left bg-background p-6 text-dark rounded-xl container-border w-full">
+    <div *ngFor="let booklet of booklets" class="flex flex-row items-center">
+      <button
+        (click)="openBooklet(booklet)"
+        type="button"
+        class="text-left bg-background p-6 text-dark rounded-xl container-border w-full"
+      >
         <h3>{{ booklet.name }}</h3>
         <p>{{ booklet.description }}</p>
       </button>
+      <button (click)="editBooklet(booklet)" type="button">
+        <span class="material-icons text-light ml-2 text-2xl">edit</span>
+      </button>
     </div>
   </div>
+  <div *ngIf="booklets.length === 0" class="text-light text-lg font-semibold">
+    Je hebt nog geen huishoudboekjes!
+  </div>
 </section>
-<section class="relative mt-8 bg-white px-16 py-8 container-border flex justify-center items-center">
-  <img class="w-24 absolute left-12" src="../../../assets/images/hellokitty_dog.png" alt="Hello kitty dog"/>
-  <button (click)="addBooklet()" class="button text-xl ml-8">Huishoudboekje toevoegen</button>
+<section
+  class="relative mt-8 bg-white px-16 py-8 container-border flex justify-center items-center"
+>
+  <img
+    class="w-24 absolute left-12"
+    src="../../../assets/images/hellokitty_dog.png"
+    alt="Hello kitty dog"
+  />
+  <button (click)="addBooklet()" class="button text-xl ml-8">
+    Huishoudboekje toevoegen
+  </button>
 </section>

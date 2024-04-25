@@ -11,6 +11,7 @@ import {
   updateDoc,
   where,
 } from '@angular/fire/firestore';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,7 +19,7 @@ import {
 export class BookletService {
   private booklets: Booklet[] = [];
 
-  constructor(private firestore: Firestore) {}
+  constructor(private firestore: Firestore, private authService: AuthService) {}
 
   async createBooklet(booklet: Booklet): Promise<Booklet> {
     const ref = await addDoc(
@@ -38,11 +39,12 @@ export class BookletService {
     });
   }
 
-  async getBookletListener(): Promise<Observable<Booklet[]>> {
+  async getBookletListener(userId: string): Promise<Observable<Booklet[]>> {
     return new Observable<Booklet[]>((observer) => {
       const q = query(
         collection(this.firestore, 'booklets'),
-        where('isArchived', '==', false)
+        where('isArchived', '==', false),
+        where('userId', '==', userId)
       );
 
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
