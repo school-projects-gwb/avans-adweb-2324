@@ -74,8 +74,7 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
   }
 
   openBooklet(booklet: Booklet): void {
-    // TODO navigate
-    console.log(booklet.id);
+    this.router.navigate(['/huishoudboekje', booklet.id]);
   }
 
   editBooklet(booklet: Booklet): void {

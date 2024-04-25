@@ -1,0 +1,24 @@
+<section class="p-16 hellokitty-background">
+    <div class="flex flex-row items-center">
+      <img
+        class="w-1/12"
+        src="../../../assets/images/hellokitty.png"
+        alt="Hello kitty"
+      />
+      <h2 class="title ml-8">Overzicht Uitgaven en Inkomsten</h2>
+    </div>
+    
+    <div class="mt-8">
+      <h3 class="text-xl font-bold mb-4">Uitgaven</h3>
+      <ul class="bg-background p-6 text-dark rounded-xl container-border">
+        <li *ngFor="let expense of expenses">{{ expense }}</li>
+      </ul>
+    </div>
+  
+    <div class="mt-8">
+      <h3 class="text-xl font-bold mb-4">Inkomsten</h3>
+      <ul class="bg-background p-6 text-dark rounded-xl container-border">
+        <li *ngFor="let incomeItem of income">{{ incomeItem }}</li>
+      </ul>
+    </div>
+  </section>

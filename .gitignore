@@ -47,3 +47,4 @@ Thumbs.db
 .firebase
 *-debug.log
 .runtimeconfig.json
+.nx/cache/18.3.3-nx.win32-x64-msvc.node
