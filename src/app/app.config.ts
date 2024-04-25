@@ -16,6 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideAnimationsAsync(),
     provideAnimationsAsync(),
+    importProvidersFrom(provideFirestore(() => getFirestore())),
     importProvidersFrom(
       provideFirebaseApp(() =>
         initializeApp({
@@ -30,6 +31,5 @@ export const appConfig: ApplicationConfig = {
       )
     ),
     importProvidersFrom(provideAuth(() => getAuth())),
-    importProvidersFrom(provideFirestore(() => getFirestore())),
   ],
 };

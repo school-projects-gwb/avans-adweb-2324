@@ -1,0 +1,31 @@
+<form
+  [formGroup]="formGroup"
+  (ngSubmit)="onSubmit(formGroup.value)"
+  class="flex flex-col"
+>
+  <mat-radio-group (change)="onChange($event)" class="flex flex-row">
+    <mat-radio-button [value]="0" checked>Inloggen met bestaand account</mat-radio-button>
+    <mat-radio-button [value]="1" class="ml-8">Nieuw account registreren</mat-radio-button>
+  </mat-radio-group>
+  <mat-form-field class="mt-8">
+    <input
+      matInput
+      type="email"
+      placeholder="E-mailadres"
+      formControlName="email"
+    />
+  </mat-form-field>
+  <mat-form-field>
+    <input
+      matInput
+      type="password"
+      placeholder="Wachtwoord"
+      formControlName="password"
+    />
+  </mat-form-field>
+  <div>
+    <button mat-raised-button color="primary" type="submit" class="button" [disabled]="!formGroup.valid">
+      {{ isLogin ? 'Inloggen' : 'Registreren' }}
+    </button>
+  </div>
+</form>
