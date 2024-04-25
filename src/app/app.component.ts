@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { BookletOverviewComponent } from './components/booklet-overview/booklet-overview.component';
-import { BookletCreateDialogComponent } from './components/booklet-create-dialog/booklet-create-dialog.component';
+import { LoggedInUserComponent } from './logged-in-user/logged-in-user.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, BookletOverviewComponent, BookletCreateDialogComponent],
+  imports: [RouterOutlet, BookletOverviewComponent, LoggedInUserComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

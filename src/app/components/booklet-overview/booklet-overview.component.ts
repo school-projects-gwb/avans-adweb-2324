@@ -17,12 +17,19 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-booklet-overview',
   standalone: true,
-  imports: [RouterModule, NgIf, NgFor, MatDialogModule, MatInputModule, FormsModule],
+  imports: [
+    RouterModule,
+    NgIf,
+    NgFor,
+    MatDialogModule,
+    MatInputModule,
+    FormsModule,
+  ],
   templateUrl: './booklet-overview.component.html',
   styleUrls: ['./booklet-overview.component.css'],
 })
 export class BookletOverviewComponent implements OnInit, OnDestroy {
-  bookletSubscription: Subscription = new Subscription();
+  currentUserSubscription: Subscription = new Subscription();
   booklets: Booklet[] = [];
   firestore = inject(Firestore);
 
@@ -37,20 +44,27 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
     this.authService
       .getIsAuthenticatedListener()
       .then((observable) => {
-        this.bookletSubscription = observable.subscribe((currentUserResult) => {
-          if (!currentUserResult.isLoggedIn) this.router.navigate(['/auth']);
+        this.currentUserSubscription = observable.subscribe(
+          (currentUserResult) => {
+            if (!currentUserResult.isLoggedIn) {
+              this.router.navigate(['/auth']);
+              return;
+            } 
 
-          this.bookletService
-            .getBookletListener(currentUserResult.userId)
-            .then((observable) => {
-              this.bookletSubscription = observable.subscribe((booklets) => {
-                this.booklets = booklets;
+            this.bookletService
+              .getBookletListener(currentUserResult.userId)
+              .then((observable) => {
+                this.currentUserSubscription = observable.subscribe(
+                  (booklets) => {
+                    this.booklets = booklets;
+                  }
+                );
+              })
+              .catch((error) => {
+                console.error('Error fetching booklets:', error);
               });
-            })
-            .catch((error) => {
-              console.error('Error fetching booklets:', error);
-            });
-        });
+          }
+        );
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -102,6 +116,6 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.bookletSubscription.unsubscribe();
+    this.currentUserSubscription.unsubscribe();
   }
 }
