@@ -39,11 +39,14 @@ export class BookletService {
     });
   }
 
-  async getBookletListener(userId: string): Promise<Observable<Booklet[]>> {
+  async getBookletListener(
+    userId: string,
+    archived: boolean = false
+  ): Promise<Observable<Booklet[]>> {
     return new Observable<Booklet[]>((observer) => {
       const q = query(
         collection(this.firestore, 'booklets'),
-        where('isArchived', '==', false),
+        where('isArchived', '==', archived),
         where('userId', '==', userId)
       );
 
@@ -65,6 +68,13 @@ export class BookletService {
     const ref = doc(this.firestore, 'booklets', booklet.id);
     await updateDoc(ref, {
       isArchived: true,
+    });
+  }
+
+  async unarchiveBooklet(booklet: Booklet): Promise<void> {
+    const ref = doc(this.firestore, 'booklets', booklet.id);
+    await updateDoc(ref, {
+      isArchived: false,
     });
   }
 
