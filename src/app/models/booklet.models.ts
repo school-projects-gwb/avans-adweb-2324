@@ -102,16 +102,18 @@ export class Booklet {
       this._isOwner = true;
       this._ownerEmail = currentUserEmail;
       this.removeAuthenticatedUserEmail(currentUserEmail);
-    } 
+    }
   }
 }
 
 export const bookletConverter = {
   toFirestore: (booklet: Booklet) => {
+    // inject owner email if current user is owner
     if (booklet.isOwner || booklet.ownerEmail != null) {
-      if (!booklet.authenticatedUserEmails) booklet.authenticatedUserEmails = [];
+      if (!booklet.authenticatedUserEmails)
+        booklet.authenticatedUserEmails = [];
       booklet.authenticatedUserEmails.push(booklet.ownerEmail);
-    } 
+    }
 
     return {
       name: booklet.name,

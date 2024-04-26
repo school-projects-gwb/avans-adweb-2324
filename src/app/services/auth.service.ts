@@ -101,7 +101,7 @@ export class AuthService {
     try {
       await signOut(this.auth);
       return true;
-    } catch(error) {
+    } catch (error) {
       return false;
     }
   }

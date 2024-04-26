@@ -21,9 +21,12 @@ export class BookletService {
 
   constructor(private firestore: Firestore) {}
 
-  async createBooklet(booklet: Booklet, loggedInUserEmail: string): Promise<Booklet> {
+  async createBooklet(
+    booklet: Booklet,
+    loggedInUserEmail: string
+  ): Promise<Booklet> {
     booklet.ownerEmail = loggedInUserEmail;
-    
+
     const ref = await addDoc(
       collection(this.firestore, 'booklets'),
       bookletConverter.toFirestore(booklet)
