@@ -20,6 +20,7 @@ export class AuthService {
   auth!: Auth;
   isUserLoggedIn!: boolean;
   loggedInUserId!: string;
+  loggedInUserEmail!: string;
 
   constructor(private firestore: Firestore) {
     this.auth = getAuth(this.firestore.app);
@@ -36,6 +37,10 @@ export class AuthService {
     return this.loggedInUserId;
   }
 
+  getAuthenticatedUserEmail(): string {
+    return this.loggedInUserEmail;
+  }
+
   async getIsAuthenticatedListener(): Promise<Observable<CurrentUserResult>> {
     return new Observable<CurrentUserResult>((observer) => {
       const unsubscribe = onAuthStateChanged(this.auth, (user) => {
@@ -45,6 +50,7 @@ export class AuthService {
           result.userId = user.uid;
           result.email = user.email as string;
           this.loggedInUserId = user.uid;
+          this.loggedInUserEmail = user.email as string;
           observer.next(result);
         } else {
           observer.next(result);

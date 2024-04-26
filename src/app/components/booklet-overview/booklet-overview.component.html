@@ -17,7 +17,7 @@
         <h3>{{ booklet.name }}</h3>
         <p>{{ booklet.description }}</p>
       </button>
-      <button (click)="editBooklet(booklet)" type="button">
+      <button *ngIf="booklet.isOwner" (click)="editBooklet(booklet)" type="button">
         <span class="material-icons text-light ml-2 text-2xl">edit</span>
       </button>
     </div>

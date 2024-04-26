@@ -52,7 +52,7 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
             }
 
             this.bookletService
-              .getBookletListener(currentUserResult.email)
+              .getBookletListener(currentUserResult)
               .then((observable) => {
                 this.currentUserSubscription = observable.subscribe(
                   (booklets) => {
@@ -83,7 +83,7 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
       .subscribe(async (result: BookletDialogResult | undefined) => {
         if (!result) return;
         result.booklet.userId = this.authService.getAuthenticatedUserId();
-        await this.bookletService.createBooklet(result.booklet);
+        await this.bookletService.createBooklet(result.booklet, this.authService.getAuthenticatedUserEmail());
       });
   }
 

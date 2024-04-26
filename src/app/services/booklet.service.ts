@@ -11,6 +11,7 @@ import {
   updateDoc,
   where,
 } from '@angular/fire/firestore';
+import { CurrentUserResult } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +21,9 @@ export class BookletService {
 
   constructor(private firestore: Firestore) {}
 
-  async createBooklet(booklet: Booklet): Promise<Booklet> {
+  async createBooklet(booklet: Booklet, loggedInUserEmail: string): Promise<Booklet> {
+    booklet.ownerEmail = loggedInUserEmail;
+    
     const ref = await addDoc(
       collection(this.firestore, 'booklets'),
       bookletConverter.toFirestore(booklet)
@@ -32,30 +35,39 @@ export class BookletService {
 
   async updateBooklet(booklet: Booklet): Promise<void> {
     const ref = doc(this.firestore, 'booklets', booklet.id);
+    const convertedBooklet = bookletConverter.toFirestore(booklet);
     await updateDoc(ref, {
-      name: booklet.name,
-      description: booklet.description,
-      authenticatedUserEmails: booklet.authenticatedUserEmails
+      name: convertedBooklet.name,
+      description: convertedBooklet.description,
+      authenticatedUserEmails: convertedBooklet.authenticatedUserEmails,
     });
   }
 
   async getBookletListener(
-    userEmail: string,
+    currentUserResult: CurrentUserResult,
     archived: boolean = false
   ): Promise<Observable<Booklet[]>> {
     return new Observable<Booklet[]>((observer) => {
-      console.log(userEmail);
       const q = query(
         collection(this.firestore, 'booklets'),
         where('isArchived', '==', archived),
-        where('authenticatedUserEmails', 'array-contains', userEmail)
+        where(
+          'authenticatedUserEmails',
+          'array-contains',
+          currentUserResult.email
+        )
       );
 
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const booklets: Booklet[] = [];
 
         querySnapshot.forEach((doc) => {
-          booklets.push(bookletConverter.fromFirestore(doc, {}));
+          const booklet: Booklet = bookletConverter.fromFirestore(doc, {});
+          booklet.setOwnerInfo(
+            currentUserResult.userId,
+            currentUserResult.email
+          );
+          booklets.push(booklet);
         });
 
         observer.next(booklets);

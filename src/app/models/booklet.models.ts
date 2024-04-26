@@ -3,7 +3,8 @@ import { DocumentSnapshot, SnapshotOptions } from '@angular/fire/firestore';
 export class Booklet {
   private _id: string;
   private _userId: string;
-  private _userEmail: string; // TODO this stuff
+  private _ownerEmail!: string;
+  private _isOwner: boolean = false;
   private _name: string;
   private _description: string;
   private _isArchived: boolean;
@@ -12,14 +13,12 @@ export class Booklet {
   constructor(
     id: string,
     userId: string,
-    userEmail: string,
     name: string,
     description: string,
     authenticatedUserEmails: string[] = []
   ) {
     this._id = id;
     this._userId = userId;
-    this._userEmail = userEmail;
     this._name = name;
     this._description = description;
     this._isArchived = false;
@@ -28,14 +27,6 @@ export class Booklet {
 
   set id(id: string) {
     this._id = id;
-  }
-
-  set userEmail(email: string) {
-    this._userEmail = email;
-  }
-
-  get userEmail(): string {
-    return this._userEmail;
   }
 
   get id(): string {
@@ -82,7 +73,21 @@ export class Booklet {
     return this._authenticatedUserEmails;
   }
 
+  get isOwner(): boolean {
+    return this._isOwner;
+  }
+
+  set ownerEmail(ownerEmail: string) {
+    this._ownerEmail = ownerEmail;
+  }
+
+  get ownerEmail(): string {
+    return this._ownerEmail;
+  }
+
   public addAuthenticatedUserEmail(emailToAdd: string): void {
+    if (this.isOwner && emailToAdd == this._ownerEmail) return;
+
     if (!this._authenticatedUserEmails.includes(emailToAdd))
       this._authenticatedUserEmails.push(emailToAdd);
   }
@@ -91,10 +96,23 @@ export class Booklet {
     const index = this._authenticatedUserEmails.indexOf(emailToRemove);
     if (index !== -1) this._authenticatedUserEmails.splice(index, 1);
   }
+
+  public setOwnerInfo(currentUserId: string, currentUserEmail: string) {
+    if (currentUserId == this._userId) {
+      this._isOwner = true;
+      this._ownerEmail = currentUserEmail;
+      this.removeAuthenticatedUserEmail(currentUserEmail);
+    } 
+  }
 }
 
 export const bookletConverter = {
   toFirestore: (booklet: Booklet) => {
+    if (booklet.isOwner || booklet.ownerEmail != null) {
+      if (!booklet.authenticatedUserEmails) booklet.authenticatedUserEmails = [];
+      booklet.authenticatedUserEmails.push(booklet.ownerEmail);
+    } 
+
     return {
       name: booklet.name,
       description: booklet.description,
@@ -105,7 +123,7 @@ export const bookletConverter = {
   },
   fromFirestore: (snapshot: DocumentSnapshot, options: SnapshotOptions) => {
     const data = snapshot.data(options);
-    if (!data) return new Booklet('', '', '', '', '');
+    if (!data) return new Booklet('', '', '', '');
     return new Booklet(
       snapshot.id,
       data['userId'],

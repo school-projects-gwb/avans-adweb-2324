@@ -35,7 +35,7 @@ export class BookletArchiveComponent implements OnInit {
             }
 
             this.bookletService
-              .getBookletListener(currentUserResult.email, true)
+              .getBookletListener(currentUserResult, true)
               .then((observable) => {
                 this.currentUserSubscription = observable.subscribe(
                   (booklets) => {
