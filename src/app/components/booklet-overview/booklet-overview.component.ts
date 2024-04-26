@@ -49,10 +49,10 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
             if (!currentUserResult.isLoggedIn) {
               this.router.navigate(['/auth']);
               return;
-            } 
+            }
 
             this.bookletService
-              .getBookletListener(currentUserResult.userId)
+              .getBookletListener(currentUserResult.email)
               .then((observable) => {
                 this.currentUserSubscription = observable.subscribe(
                   (booklets) => {
@@ -98,7 +98,7 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
 
   editBooklet(booklet: Booklet): void {
     const dialogRef = this.dialog.open(BookletCreateDialogComponent, {
-      width: '270px',
+      width: '800px',
       data: {
         booklet,
         enableDelete: true,
@@ -107,15 +107,11 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
     dialogRef
       .afterClosed()
       .subscribe((result: BookletDialogResult | undefined) => {
-        if (!result) {
-          return;
-        }
+        if (!result) return;
 
-        if (result.delete) {
-          this.bookletService.archiveBooklet(booklet);
-        } else {
-          this.bookletService.updateBooklet(booklet);
-        }
+        result.delete
+          ? this.bookletService.archiveBooklet(booklet)
+          : this.bookletService.updateBooklet(booklet);
       });
   }
 
