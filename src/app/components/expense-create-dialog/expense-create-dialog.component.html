@@ -1,0 +1,16 @@
+<div>
+    <mat-form-field>
+      <mat-label>Amount</mat-label>
+      <input matInput [(ngModel)]="data.expense.amount" type="number" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Booklet ID</mat-label>
+      <input matInput [(ngModel)]="data.expense.bookletId" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Date</mat-label>
+      <input matInput [(ngModel)]="data.expense.date" type="date" />
+    </mat-form-field>
+    <button mat-button [mat-dialog-close]="{ expense: data.expense }">Save</button>
+    <button mat-button (click)="cancel()">Cancel</button>
+  </div>
