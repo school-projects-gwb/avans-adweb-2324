@@ -1,4 +1,4 @@
-import { DocumentSnapshot, SnapshotOptions } from '@angular/fire/firestore';
+import { DocumentSnapshot, SnapshotOptions, Timestamp } from '@angular/fire/firestore';
 
 export class Expense {
     id: string;
@@ -29,7 +29,7 @@ export const expenseConverter = {
       snapshot.id,
       data['bookletId'],
       data['amount'],
-      data['date'] instanceof Date ? data['date'] : new Date(data['date'])
+      data['date'] instanceof Timestamp ? data['date'].toDate() : new Date(data['date'])
     );
   },
 };
