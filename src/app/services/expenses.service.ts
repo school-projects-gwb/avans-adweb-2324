@@ -23,6 +23,7 @@ export class ExpensesService {
 
   private async validateBookletOwnership(bookletId: string): Promise<void> {
     const bookletRef = doc(this.firestore, `booklets/${bookletId}`);
+    
     const bookletSnap = await getDoc(bookletRef);
     if (!bookletSnap.exists()) {
       console.error('Booklet not found:', bookletId); // Log booklet not found
