@@ -22,7 +22,6 @@ export class ExpenseCreateDialogComponent {
 
   cancel(): void {
     this.data.expense.amount = this.backupExpense.amount;
-    this.data.expense.bookletId = this.backupExpense.bookletId;
     this.data.expense.date = this.backupExpense.date;
     this.dialogRef.close();
   }
