@@ -17,12 +17,19 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-booklet-overview',
   standalone: true,
-  imports: [RouterModule, NgIf, NgFor, MatDialogModule, MatInputModule, FormsModule],
+  imports: [
+    RouterModule,
+    NgIf,
+    NgFor,
+    MatDialogModule,
+    MatInputModule,
+    FormsModule,
+  ],
   templateUrl: './booklet-overview.component.html',
   styleUrls: ['./booklet-overview.component.css'],
 })
 export class BookletOverviewComponent implements OnInit, OnDestroy {
-  bookletSubscription: Subscription = new Subscription();
+  currentUserSubscription: Subscription = new Subscription();
   booklets: Booklet[] = [];
   firestore = inject(Firestore);
 
@@ -37,20 +44,27 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
     this.authService
       .getIsAuthenticatedListener()
       .then((observable) => {
-        this.bookletSubscription = observable.subscribe((currentUserResult) => {
-          if (!currentUserResult.isLoggedIn) this.router.navigate(['/auth']);
+        this.currentUserSubscription = observable.subscribe(
+          (currentUserResult) => {
+            if (!currentUserResult.isLoggedIn) {
+              this.router.navigate(['/auth']);
+              return;
+            }
 
-          this.bookletService
-            .getBookletListener(currentUserResult.userId)
-            .then((observable) => {
-              this.bookletSubscription = observable.subscribe((booklets) => {
-                this.booklets = booklets;
+            this.bookletService
+              .getBookletListener(currentUserResult)
+              .then((observable) => {
+                this.currentUserSubscription = observable.subscribe(
+                  (booklets) => {
+                    this.booklets = booklets;
+                  }
+                );
+              })
+              .catch((error) => {
+                console.error('Error fetching booklets:', error);
               });
-            })
-            .catch((error) => {
-              console.error('Error fetching booklets:', error);
-            });
-        });
+          }
+        );
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -69,7 +83,7 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
       .subscribe(async (result: BookletDialogResult | undefined) => {
         if (!result) return;
         result.booklet.userId = this.authService.getAuthenticatedUserId();
-        await this.bookletService.createBooklet(result.booklet);
+        await this.bookletService.createBooklet(result.booklet, this.authService.getAuthenticatedUserEmail());
       });
   }
 
@@ -77,9 +91,13 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
     this.router.navigate(['/huishoudboekje', booklet.id]);
   }
 
+  openArchive(): void {
+    this.router.navigate(['archive']);
+  }
+
   editBooklet(booklet: Booklet): void {
     const dialogRef = this.dialog.open(BookletCreateDialogComponent, {
-      width: '270px',
+      width: '800px',
       data: {
         booklet,
         enableDelete: true,
@@ -88,19 +106,15 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
     dialogRef
       .afterClosed()
       .subscribe((result: BookletDialogResult | undefined) => {
-        if (!result) {
-          return;
-        }
+        if (!result) return;
 
-        if (result.delete) {
-          this.bookletService.archiveBooklet(booklet);
-        } else {
-          this.bookletService.updateBooklet(booklet);
-        }
+        result.delete
+          ? this.bookletService.archiveBooklet(booklet)
+          : this.bookletService.updateBooklet(booklet);
       });
   }
 
   ngOnDestroy(): void {
-    this.bookletSubscription.unsubscribe();
+    this.currentUserSubscription.unsubscribe();
   }
 }
