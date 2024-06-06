@@ -11,14 +11,14 @@ import { AuthService } from '../../services/auth.service';
 import { ExpensesService } from '../../services/expenses.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { CategoriesComponent } from "../categories/categories.component";
+import { CategoryOverviewComponent } from "../category-overview/category-overview.component";
 
 @Component({
     selector: 'app-expenses-income',
     templateUrl: './expenses-income.component.html',
     styleUrls: ['./expenses-income.component.css'], // Add CommonModule to imports in the standalone component
     standalone: true,
-    imports: [FormsModule, MatFormFieldModule, MatInputModule, CommonModule, CategoriesComponent]
+    imports: [FormsModule, MatFormFieldModule, MatInputModule, CommonModule, CategoryOverviewComponent]
 })
 export class ExpensesIncomeComponent implements OnInit, OnDestroy {
   @Input() bookletId!: string;  

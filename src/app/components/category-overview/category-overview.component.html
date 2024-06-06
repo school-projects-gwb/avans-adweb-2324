@@ -14,12 +14,13 @@
       ></progress>
       <span class="progressBarValue"> €{{ category.totalAmount }} / €{{ category.budget }} </span>
       <p *ngIf="category.targetDate" class="text-sm"><b>Einddatum:</b> {{ category.targetDate | date:'dd-MM-yyyy' }}</p>
+      <button (click)="editCategory(category)" class="underline">Bewerken</button>
     </div>
   </div>
   <ng-template #noCategoriesFound>
     <p class="text-dark">Geen categorieën gevonden</p>
   </ng-template>
 </div>
-<button (click)="addCategory()" class="button text-xl ml-8">
+<button (click)="addCategory()" class="button mt-4 text-md w-full">
   Categorie toevoegen
 </button>

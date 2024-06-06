@@ -13,10 +13,10 @@ import { CategoryCreateDialogComponent, CategoryDialogResult } from '../category
   selector: 'app-categories',
   standalone: true,
   imports: [CommonModule, CdkDropList, CdkDrag, NgFor],
-  templateUrl: './categories.component.html',
-  styleUrl: './categories.component.css',
+  templateUrl: './category-overview.component.html',
+  styleUrl: './category-overview.component.css',
 })
-export class CategoriesComponent implements OnInit, OnDestroy {
+export class CategoryOverviewComponent implements OnInit, OnDestroy {
   @Input() bookletId!: string;
   categories: Category[] = [];
   categoriesSubscription: Subscription = new Subscription();
@@ -81,8 +81,31 @@ export class CategoriesComponent implements OnInit, OnDestroy {
       .afterClosed()
       .subscribe(async (result: CategoryDialogResult | undefined) => {
         if (!result) return;
-        console.log(result);
-        // await this.categoriesService.createCategory(result.category, this.authService.getAuthenticatedUserEmail());
+        result.category.bookletId = this.bookletId;
+        await this.categoriesService.createCategory(result.category);
+      });
+  }
+
+  editCategory(category: Category): void {
+    const dialogRef = this.dialog.open(CategoryCreateDialogComponent, {
+      width: '800px',
+      data: {
+        category,
+        enableDelete: true,
+      },
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe((result: CategoryDialogResult | undefined) => {
+        if (!result) return;
+        category.bookletId = this.bookletId;
+        category.name = result.category.name;
+        category.budget = result.category.budget;
+        category.targetDate = result.category.targetDate;
+        
+        result.delete
+          ? this.categoriesService.deleteCategory(category)
+          : this.categoriesService.updateCategory(category);
       });
   }
 }

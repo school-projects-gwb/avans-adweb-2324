@@ -5,29 +5,43 @@
       <mat-form-field class="w-full mt-4">
         <mat-label>Naam</mat-label>
         <input matInput formControlName="name" />
-        <mat-error *ngIf="formGroup.get('name')?.hasError('required')">Naam is verplicht</mat-error>
+        <mat-error *ngIf="formGroup.get('name')?.hasError('required')"
+          >Naam is verplicht</mat-error
+        >
       </mat-form-field>
 
       <mat-form-field class="w-full mt-4">
         <mat-label>Budget</mat-label>
         <input matInput formControlName="budget" type="number" min="1" />
-        <mat-error *ngIf="formGroup.get('budget')?.hasError('required')">Budget is verplicht</mat-error>
-        <mat-error *ngIf="formGroup.get('budget')?.hasError('min')">Budget moet minimaal 1 zijn</mat-error>
+        <mat-error *ngIf="formGroup.get('budget')?.hasError('required')"
+          >Budget is verplicht</mat-error
+        >
+        <mat-error *ngIf="formGroup.get('budget')?.hasError('min')"
+          >Budget moet minimaal 1 zijn</mat-error
+        >
       </mat-form-field>
 
       <mat-form-field class="w-full mt-4">
         <mat-label>Einddatum (optioneel)</mat-label>
         <input matInput [matDatepicker]="picker" formControlName="targetDate" />
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-hint>Formaat: MM/DD/YYYY</mat-hint>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
     </form>
   </div>
 
-  <div class="mt-8">
+  <div class="mt-8 flex flex-col justify-center">
     <button mat-button (click)="save()" class="button w-full">Opslaan</button>
+    <button mat-button (click)="cancel()" class="mt-4 underline">
+      Annuleren
+    </button>
     <div class="flex justify-center mt-4 border-t-2" *ngIf="data.enableDelete">
-      <button mat-button aria-label="Verwijderen" class="text-red-600 mt-4" [mat-dialog-close]="{ task: data.category, delete: true }">
+      <button
+        mat-button
+        aria-label="Verwijderen"
+        class="text-red-600 mt-4"
+        [mat-dialog-close]="{ task: data.category, delete: true }"
+      >
         Verwijderen
       </button>
     </div>

@@ -14,8 +14,8 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-category-create-dialog',
@@ -28,6 +28,9 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatDialogModule,
     MatNativeDateModule,
     MatDatepickerModule,
+  ],
+  providers: [  
+    MatDatepickerModule,  
   ],
   templateUrl: './category-create-dialog.component.html',
   styleUrl: './category-create-dialog.component.css',
@@ -58,21 +61,13 @@ export class CategoryCreateDialogComponent implements OnInit {
 
   save(): void {
     if (!this.formGroup.valid) return;
-    
+
     this.dialogRef.close({
-      category: this.formGroup.value
+      category: this.formGroup.value,
     });
   }
 
   cancel(): void {
-    if (this.data.category) {
-      const category = this.data.category as Category;
-      const backupCategory = this.backupCategory as Category;
-      category.name = backupCategory.name;
-      category.budget = backupCategory.budget;
-      category.targetDate = backupCategory.targetDate;
-    }
-
     this.dialogRef.close();
   }
 }

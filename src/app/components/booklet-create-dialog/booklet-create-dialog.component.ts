@@ -61,14 +61,6 @@ export class BookletCreateDialogComponent implements OnInit {
   }
 
   cancel(): void {
-    if (this.data.booklet) {
-      const booklet = this.data.booklet as Booklet;
-      const backupBooklet = this.backupBooklet as Booklet;
-      booklet.name = backupBooklet.name;
-      booklet.description = backupBooklet.description;
-      booklet.authenticatedUserEmails = backupBooklet.authenticatedUserEmails;
-    }
-
     this.dialogRef.close();
   }
 
