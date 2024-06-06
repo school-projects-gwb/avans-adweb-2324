@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { CategoryCreateDialogComponent, CategoryDialogResult } from '../category-create-dialog/category-create-dialog.component';
 
 @Component({
   selector: 'app-categories',
@@ -67,5 +68,21 @@ export class CategoriesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.categoriesSubscription.unsubscribe();
+  }
+
+  async addCategory(): Promise<void> {
+    const dialogRef = this.dialog.open(CategoryCreateDialogComponent, {
+      width: '270px',
+      data: {
+        category: {},
+      },
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe(async (result: CategoryDialogResult | undefined) => {
+        if (!result) return;
+        console.log(result);
+        // await this.categoriesService.createCategory(result.category, this.authService.getAuthenticatedUserEmail());
+      });
   }
 }

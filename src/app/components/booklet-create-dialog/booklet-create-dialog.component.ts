@@ -24,7 +24,8 @@ import { CommonModule } from '@angular/common';
 })
 export class BookletCreateDialogComponent implements OnInit {
   private backupBooklet: Partial<Booklet> = { ...this.data.booklet };
-  formGroup!: FormGroup;
+  basicInfoFormGroup!: FormGroup;
+  userAccessFormGroup!: FormGroup;
 
   constructor(
     public dialogRef: MatDialogRef<BookletCreateDialogComponent>,
@@ -33,15 +34,30 @@ export class BookletCreateDialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.formGroup = this.formBuilder.group({
+    this.basicInfoFormGroup = this.formBuilder.group({
+      name: [
+        this.data.booklet?.name || '',
+        [Validators.required, Validators.minLength(1)],
+      ],
+      description: [
+        this.data.booklet?.description || ''
+      ],
+    });
+
+    this.userAccessFormGroup = this.formBuilder.group({
       userEmailToModifyAccess: [null, [Validators.required, Validators.email]],
     });
 
-    this.formGroup.value;
+    this.basicInfoFormGroup.value;
+    this.userAccessFormGroup.value;
   }
 
-  onSubmit() {
-    console.log(this.formGroup);
+  save(): void {
+    if (!this.basicInfoFormGroup.valid) return;
+    
+    this.dialogRef.close({
+      booklet: this.basicInfoFormGroup.value
+    });
   }
 
   cancel(): void {
@@ -59,7 +75,7 @@ export class BookletCreateDialogComponent implements OnInit {
   addAuthenticatedUserEmail(emailToAdd: string): void {
     const booklet = this.data.booklet as Booklet;
     booklet.addAuthenticatedUserEmail(emailToAdd);
-    this.formGroup.controls['userEmailToModifyAccess'].reset();
+    this.userAccessFormGroup.controls['userEmailToModifyAccess'].reset();
   }
 
   removeAuthenticatedUserEmail(emailToRemove: string): void {

@@ -1,16 +1,17 @@
-<div class="p-4 grid grid-cols-2">
-  <div>
+<div class="p-4 grid {{data.enableDelete ? 'grid-cols-2' : 'grid-cols-1'}}">
+  <form [formGroup]="basicInfoFormGroup">
     <h3 class="font-bold text-dark">Basisinformatie</h3>
     <mat-form-field class="w-full mt-4">
       <mat-label>Naam</mat-label>
-      <input matInput cdkFocusInitial [(ngModel)]="data.booklet.name" />
+      <input matInput cdkFocusInitial formControlName="name" />
+      <mat-error *ngIf="basicInfoFormGroup.get('name')?.hasError('required')">Naam is verplicht</mat-error>
     </mat-form-field>
 
     <mat-form-field class="w-full">
       <mat-label>Omschrijving</mat-label>
-      <textarea matInput [(ngModel)]="data.booklet.description"></textarea>
+      <textarea matInput formControlName="description"></textarea>
     </mat-form-field>
-  </div>
+  </form>
   <div *ngIf="data.enableDelete" class="flex flex-col ml-6">
     <h3 class="font-bold text-dark">Geautoriseerde gebruikers</h3>
     <p
@@ -40,8 +41,7 @@
       </div>
     </div>
     <form
-      [formGroup]="formGroup"
-      (ngSubmit)="onSubmit()"
+      [formGroup]="userAccessFormGroup"
       class="flex flex-row items-center mt-8"
     >
       <mat-form-field class="w-full">
@@ -56,7 +56,7 @@
       <button
         (click)="addAuthenticatedUserEmail(userEmailInput.value)"
         type="submit"
-        [disabled]="!formGroup.valid"
+        [disabled]="!userAccessFormGroup.valid"
       >
         <span class="material-icons text-dark ml-2 text-2xl mb-4">add</span>
       </button>
@@ -66,7 +66,7 @@
     <div class="flex flex-col">
       <button
         mat-button
-        [mat-dialog-close]="{ booklet: data.booklet }"
+        (click)="save()"
         class="button"
       >
         Opslaan
