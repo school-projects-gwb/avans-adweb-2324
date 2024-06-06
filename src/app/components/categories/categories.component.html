@@ -1,17 +1,22 @@
 <h3 class="text-xl font-bold mb-4 mt-8 text-light">Categorieën</h3>
 <div class="bg-background p-2 text-dark rounded-xl container-border mt-4 max-h-72 overflow-y-scroll">
-  <div class="relative mt-6 border border-border rounded-lg p-2" *ngFor="let category of categories">
-    <b>{{ category.name }}</b>
-    <progress
-      class="{{
-        category.totalAmount > category.budget
-          ? 'progressLimitReached'
-          : 'progressLimitNotReached'
-      }} w-full"
-      value="{{ category?.totalAmount }}"
-      max="{{ category?.budget }}"
-    ></progress>
-    <span class="progressBarValue"> €{{ category.totalAmount }} / €{{ category.budget }} </span>
-    <p *ngIf="category.targetDate" class="text-sm"><b>Einddatum:</b> {{ category.targetDate | date:'dd-MM-yyyy' }}</p>
+  <div *ngIf="categories.length > 0; else noCategoriesFound">
+    <div class="relative mt-6 border border-border rounded-lg p-2" *ngFor="let category of categories">
+      <b>{{ category.name }}</b>
+      <progress
+        class="{{
+          category.totalAmount > category.budget
+            ? 'progressLimitReached'
+            : 'progressLimitNotReached'
+        }} w-full"
+        value="{{ category?.totalAmount }}"
+        max="{{ category?.budget }}"
+      ></progress>
+      <span class="progressBarValue"> €{{ category.totalAmount }} / €{{ category.budget }} </span>
+      <p *ngIf="category.targetDate" class="text-sm"><b>Einddatum:</b> {{ category.targetDate | date:'dd-MM-yyyy' }}</p>
+    </div>
   </div>
+  <ng-template #noCategoriesFound>
+    <p class="text-dark">Geen categorieën gevonden</p>
+  </ng-template>
 </div>
