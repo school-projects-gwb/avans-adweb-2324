@@ -9,16 +9,16 @@ export class Category {
   bookletId: string;
   name: string;
   budget: number;
-  targetDate: Date;
-  totalAmount?: number;
+  targetDate: Date | null;
+  totalAmount: number;
 
   constructor(
     id: string,
     bookletId: string,
     name: string,
     budget: number,
-    targetDate: Date,
-    totalAmount?: number
+    targetDate: Date | null = null,
+    totalAmount: number = 0
   ) {
     this.id = id;
     this.bookletId = bookletId;
@@ -40,15 +40,18 @@ export const categoryConverter = {
   },
   fromFirestore: (snapshot: DocumentSnapshot, options: SnapshotOptions) => {
     const data = snapshot.data(options);
-    if (!data) return new Category('', '', '', 0, new Date());
+    if (!data) return new Category('', '', '', 0, null);
+    const targetDate = data['targetDate'] instanceof Timestamp
+      ? data['targetDate'].toDate()
+      : data['targetDate']
+        ? new Date(data['targetDate'])
+        : null;
     return new Category(
       snapshot.id,
       data['bookletId'],
       data['name'],
       data['budget'],
-      data['targetDate'] instanceof Timestamp
-        ? data['targetDate'].toDate()
-        : new Date(data['targetDate'])
+      targetDate
     );
   },
 };
