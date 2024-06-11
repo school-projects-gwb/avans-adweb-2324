@@ -12,7 +12,21 @@
       <div class="mt-8">
         <h3 class="text-xl font-bold mb-4">Uitgaven</h3>
         <ul class="bg-background p-6 text-dark rounded-xl container-border">
-          <li *ngFor="let expense of expenses">{{ expense.amount }} - {{ expense.date | date:'mediumDate' }} - {{ expense.isIncome ? 'Income' : 'Expense' }}</li>
+          <li *ngFor="let expense of expenses" class="mt-4">
+            <div class="flex flex-row mb-4 expense-item">
+              <div>
+                <span class="font-bold">{{ expense.name }} ({{ expense.isIncome ? 'Income' : 'Expense' }})</span>
+                <br>
+                <span class="text-gray-400">{{ expense.date | date:'mediumDate' }}</span>
+              </div>
+              <div class="ml-auto">
+                <span class="text-red-500">
+                  <b>€{{ expense.amount }}</b>
+                </span>
+              </div>
+            </div>
+            <hr class="expense-divider">
+          </li>
         </ul>
         <div class="hellokitty-background">
           <button (click)="addExpense()" class="button text-xl ml-8">Uitgave Toevoegen</button>

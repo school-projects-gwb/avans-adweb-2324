@@ -13,7 +13,7 @@
   justify-content: flex-start;
   align-items: center;
   padding: 10px 0;
-  border-bottom: 1px solid lightgrey;
+  border-bottom: none;
 }
 
 .expense-item:last-child {
@@ -50,6 +50,12 @@
   color: #e10013;
   font-weight: bold;
   flex-shrink: 0; /* Ensure the amount only takes up its own width */
+}
+
+.expense-divider {
+  border: none;
+  border-top: 1px solid lightgrey;
+  margin: 0;
 }
 
 .overview-list-container {
