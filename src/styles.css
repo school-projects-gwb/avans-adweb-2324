@@ -3,37 +3,91 @@
 @tailwind utilities;
 
 @layer base {
-	:root {
-		--color-bg: 244 215 243;
-        --color-accent: 158 43 37;
-        --color-border: 208 167 206;
-        --color-text-light: 254 251 254;
-        --color-text-dark: 91 64 43;
-	}
+  :root {
+    --color-bg: 244 215 243;
+    --color-accent: 158 43 37;
+    --color-border: 208 167 206;
+    --color-text-light: 254 251 254;
+    --color-text-dark: 91 64 43;
+
+    --color-progress-limit-reached: rgb(207, 42, 37);
+    --color-progress-limit-not-reached: rgb(208, 167, 206);
+  }
 }
 
 * {
-    font-family: "Inter";
+  font-family: "Inter";
 }
 
 h3 {
-    @apply font-semibold text-xl;
+  @apply font-semibold text-xl;
 }
 
 .title {
-    font-family: "Tinos";
-    -webkit-text-stroke-width: .2rem;
-    -webkit-text-stroke-color: #FF95E1;
-    @apply text-6xl font-bold text-white tracking-normal italic ;
+  font-family: "Tinos";
+  -webkit-text-stroke-width: 0.2rem;
+  -webkit-text-stroke-color: #ff95e1;
+  @apply text-6xl font-bold text-white tracking-normal italic;
 }
 
 .container-border {
-    @apply border-4 border-border rounded-xl
+  @apply border-4 border-border rounded-xl;
 }
 
 .button {
-    @apply bg-accent py-4 px-6 text-light rounded-full font-semibold;
+  @apply bg-accent py-4 px-6 text-light rounded-full font-semibold;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.hellokitty-background {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("assets/images/hellokitty_money.png");
+  background-size: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  @apply border-4 border-border rounded-lg;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.progressBarValue {
+  @apply absolute text-sm left-4 text-white font-bold;
+}
+
+progress {
+  background: black;
+  border-radius: 1rem;
+  border: none;
+  color: #fff;
+  -webkit-appearance: none;
+}
+
+progress.progressLimitReached::-webkit-progress-bar {
+  background-color: var(--color-progress-limit-reached);
+}
+
+progress.progressLimitReached::-webkit-progress-value {
+  background-color: var(--color-progress-limit-reached);
+}
+
+progress.progressLimitReached::-moz-progress-bar {
+  background-color: var(--color-progress-limit-reached);
+}
+
+progress.progressLimitNotReached::-webkit-progress-bar {
+  background-color: var(--color-progress-limit-not-reached);
+}
+
+progress.progressLimitNotReached::-webkit-progress-value {
+  background-color: var(--color-progress-limit-not-reached);
+}
+
+progress.progressLimitNotReached::-moz-progress-bar {
+  background-color: var(--color-progress-limit-not-reached);
+}

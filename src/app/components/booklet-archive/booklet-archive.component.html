@@ -1,0 +1,25 @@
+<button (click)="openOverview()" type="button" class="underline mb-4 text-dark">
+  Terug naar overzicht
+</button>
+<section class="p-16 hellokitty-background">
+  <h1 class="text-2xl text-light font-bold">Gearchiveerde huishoudboekjes</h1>
+  <p class="text-light mt-2">
+    {{
+      booklets.length > 0
+        ? "Klik op een huishoudboekje om deze opnieuw te activeren!"
+        : "Je hebt geen gearchiveerde huishoudboekjes!"
+    }}
+  </p>
+  <div class="grid grid-cols-2 gap-8 mt-8 max-h-72 overflow-y-scroll">
+    <div *ngFor="let booklet of booklets" class="flex flex-row items-center">
+      <button
+        (click)="unarchiveBooklet(booklet)"
+        type="button"
+        class="text-left bg-background p-6 text-dark rounded-xl container-border w-full"
+      >
+        <h3>{{ booklet.name }}</h3>
+        <p>{{ booklet.description }}</p>
+      </button>
+    </div>
+  </div>
+</section>

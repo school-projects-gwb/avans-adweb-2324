@@ -1,35 +1,90 @@
-<div class="p-4">
-  <mat-form-field class="w-full">
-    <mat-label>Naam</mat-label>
-    <input matInput cdkFocusInitial [(ngModel)]="data.booklet.name" />
-  </mat-form-field>
+<div class="p-4 grid grid-cols-2">
+  <div>
+    <h3 class="font-bold text-dark">Basisinformatie</h3>
+    <mat-form-field class="w-full mt-4">
+      <mat-label>Naam</mat-label>
+      <input matInput cdkFocusInitial [(ngModel)]="data.booklet.name" />
+    </mat-form-field>
 
-  <mat-form-field class="w-full">
-    <mat-label>Omschrijving</mat-label>
-    <textarea matInput [(ngModel)]="data.booklet.description"></textarea>
-  </mat-form-field>
-
-  <div class="flex flex-col">
-    <button
-      mat-button
-      [mat-dialog-close]="{ booklet: data.booklet }"
-      class="button"
-    >
-      Opslaan
-    </button>
-    <button mat-button (click)="cancel()" class="mt-4 underline">
-      Annuleren
-    </button>
+    <mat-form-field class="w-full">
+      <mat-label>Omschrijving</mat-label>
+      <textarea matInput [(ngModel)]="data.booklet.description"></textarea>
+    </mat-form-field>
   </div>
-
-  <div class="flex justify-center mt-4 border-t-2" *ngIf="data.enableDelete">
-    <button
-      mat-button
-      aria-label="Archiveren"
-      class="text-red-600 mt-4"
-      [mat-dialog-close]="{ task: data.booklet, delete: true }"
+  <div *ngIf="data.enableDelete" class="flex flex-col ml-6">
+    <h3 class="font-bold text-dark">Geautoriseerde gebruikers</h3>
+    <p
+      *ngIf="!((data.booklet?.authenticatedUserEmails)!.length > 0)"
+      class="max-w-72 text-sm italic text-dark"
     >
-      Archiveren
-    </button>
+      Voeg één of meerdere e-mailadressen toe van de mensen waar je dit
+      huishoudboekje mee wil delen!
+    </p>
+    <div class="max-h-48 overflow-y-scroll">
+      <div
+        *ngFor="let email of data.booklet?.authenticatedUserEmails"
+        class="flex flex-col mt-4"
+      >
+        <div
+          class="bg-light p-1 rounded-xl border border-border flex flex-row justify-between items-center"
+        >
+          <span>{{ email }}</span>
+          <button
+            (click)="removeAuthenticatedUserEmail(email)"
+            type="button"
+            class="material-icons text-dark text-2xl"
+          >
+            delete
+          </button>
+        </div>
+      </div>
+    </div>
+    <form
+      [formGroup]="formGroup"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-row items-center mt-8"
+    >
+      <mat-form-field class="w-full">
+        <mat-label>E-mailadres gebruiker</mat-label>
+        <input
+          type="email"
+          #userEmailInput
+          matInput
+          formControlName="userEmailToModifyAccess"
+        />
+      </mat-form-field>
+      <button
+        (click)="addAuthenticatedUserEmail(userEmailInput.value)"
+        type="submit"
+        [disabled]="!formGroup.valid"
+      >
+        <span class="material-icons text-dark ml-2 text-2xl mb-4">add</span>
+      </button>
+    </form>
+  </div>
+  <div class="col-span-2">
+    <div class="flex flex-col">
+      <button
+        mat-button
+        [mat-dialog-close]="{ booklet: data.booklet }"
+        class="button"
+      >
+        Opslaan
+      </button>
+      <button mat-button (click)="cancel()" class="mt-4 underline">
+        Annuleren
+      </button>
+    </div>
+
+    <div class="flex justify-center mt-4 border-t-2" *ngIf="data.enableDelete">
+      <button
+        mat-button
+        aria-label="Archiveren"
+        class="text-red-600 mt-4"
+        [mat-dialog-close]="{ task: data.booklet, delete: true }"
+      >
+        Archiveren
+      </button>
+    </div>
   </div>
 </div>

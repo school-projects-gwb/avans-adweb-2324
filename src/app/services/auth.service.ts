@@ -8,6 +8,7 @@ import {
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signOut,
 } from '@angular/fire/auth';
 import { FirebaseError } from '@angular/fire/app';
 import { Observable } from 'rxjs';
@@ -19,6 +20,7 @@ export class AuthService {
   auth!: Auth;
   isUserLoggedIn!: boolean;
   loggedInUserId!: string;
+  loggedInUserEmail!: string;
 
   constructor(private firestore: Firestore) {
     this.auth = getAuth(this.firestore.app);
@@ -35,6 +37,10 @@ export class AuthService {
     return this.loggedInUserId;
   }
 
+  getAuthenticatedUserEmail(): string {
+    return this.loggedInUserEmail;
+  }
+
   async getIsAuthenticatedListener(): Promise<Observable<CurrentUserResult>> {
     return new Observable<CurrentUserResult>((observer) => {
       const unsubscribe = onAuthStateChanged(this.auth, (user) => {
@@ -42,7 +48,9 @@ export class AuthService {
         if (user) {
           result.isLoggedIn = true;
           result.userId = user.uid;
-          this.loggedInUserId = result.userId;
+          result.email = user.email as string;
+          this.loggedInUserId = user.uid;
+          this.loggedInUserEmail = user.email as string;
           observer.next(result);
         } else {
           observer.next(result);
@@ -88,11 +96,21 @@ export class AuthService {
       );
     }
   }
+
+  async logout(): Promise<boolean> {
+    try {
+      await signOut(this.auth);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 }
 
 export class CurrentUserResult {
   isLoggedIn: boolean = false;
   userId!: string;
+  email!: string;
 }
 
 export class AuthResult {

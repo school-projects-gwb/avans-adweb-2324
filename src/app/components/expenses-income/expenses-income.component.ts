@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { Firestore, collection, query, where, onSnapshot } from '@angular/fire/firestore';
+import { Firestore } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms'; // Import FormsModule
 import { MatFormFieldModule } from '@angular/material/form-field'; // Import Angular Material modules
 import { MatInputModule } from '@angular/material/input'; // Import Angular Material modules
@@ -11,13 +11,14 @@ import { AuthService } from '../../services/auth.service';
 import { ExpensesService } from '../../services/expenses.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { CategoriesComponent } from "../categories/categories.component";
 
 @Component({
-  selector: 'app-expenses-income',
-  templateUrl: './expenses-income.component.html',
-  styleUrls: ['./expenses-income.component.css'],
-  imports: [FormsModule, MatFormFieldModule, MatInputModule, CommonModule], // Add CommonModule to imports in the standalone component
-  standalone: true
+    selector: 'app-expenses-income',
+    templateUrl: './expenses-income.component.html',
+    styleUrls: ['./expenses-income.component.css'], // Add CommonModule to imports in the standalone component
+    standalone: true,
+    imports: [FormsModule, MatFormFieldModule, MatInputModule, CommonModule, CategoriesComponent]
 })
 export class ExpensesIncomeComponent implements OnInit, OnDestroy {
   @Input() bookletId!: string;  
