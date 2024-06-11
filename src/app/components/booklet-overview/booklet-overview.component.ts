@@ -107,6 +107,9 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
       .afterClosed()
       .subscribe((result: BookletDialogResult | undefined) => {
         if (!result) return;
+        
+        booklet.name = result.booklet.name;
+        booklet.description = result.booklet.description;
 
         result.delete
           ? this.bookletService.archiveBooklet(booklet)

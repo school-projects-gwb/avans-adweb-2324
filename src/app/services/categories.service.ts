@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
 import {
   Firestore,
+  addDoc,
   collection,
+  deleteDoc,
+  doc,
   onSnapshot,
   query,
+  updateDoc,
   where,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
@@ -14,6 +18,26 @@ import { Category, categoryConverter } from '../models/category.models';
 })
 export class CategoriesService {
   constructor(private firestore: Firestore) {}
+
+  async createCategory(category: Category): Promise<Category> {
+    const ref = await addDoc(
+      collection(this.firestore, 'categories'),
+      categoryConverter.toFirestore(category)
+    );
+
+    category.id = ref.id;
+    return category;
+  }
+
+  async updateCategory(category: Category): Promise<void> {
+    const ref = doc(this.firestore, 'categories', category.id);
+    const convertedCategory = categoryConverter.toFirestore(category);
+    await updateDoc(ref, {
+      name: convertedCategory.name,
+      budget: convertedCategory.budget,
+      targetDate: convertedCategory.targetDate,
+    });
+  }
 
   async getCategoriesListener(
     bookletId: string
@@ -75,6 +99,11 @@ export class CategoriesService {
 
       return () => unsubscribe();
     });
+  }
+
+  async deleteCategory(category: Category): Promise<void> {
+    const ref = doc(this.firestore, 'categories', category.id);
+    await deleteDoc(ref);
   }
 }
 
