@@ -26,12 +26,19 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
   income: Expense[] = []; 
   newExpense: Partial<Expense> = {};
   expensesSubscription: Subscription = new Subscription();
+  selectedMonth: number = new Date().getMonth();
+  selectedYear: number = new Date().getFullYear();
+  months = [
+    { value: 0, name: 'Januari' }, { value: 1, name: 'Februari' }, { value: 2, name: 'Maart' }, { value: 3, name: 'April' }, { value: 4, name: 'Mei' }, { value: 5, name: 'Juni' }, { value: 6, name: 'Juli' }, { value: 7, name: 'Augustus' }, { value: 8, name: 'September' }, { value: 9, name: 'Oktober' }, { value: 10, name: 'November' }, { value: 11, name: 'December' }
+  ];
+  years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
 
   constructor(private expensesService: ExpensesService, private authService: AuthService, private firestore: Firestore, private router: Router, private dialog: MatDialog, private route: ActivatedRoute) { }  
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.bookletId = params.get('id') || '';
+      this.fetchExpensesAndIncome();
     });
     this.authService
       .getIsAuthenticatedListener()
@@ -45,17 +52,6 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
             console.error('Error: bookletId is undefined');
             return;
           }
-          this.expensesService
-            .getExpensesListener(this.bookletId)
-            .then((observable) => {
-              this.expensesSubscription = observable.subscribe((expenses) => {
-                this.expenses = expenses.filter(expense => !expense.isIncome).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-                this.income = expenses.filter(expense => expense.isIncome).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-              });
-            })
-            .catch((error) => {
-              console.error('Error fetching expenses:', error);
-            });
         });
       })
       .catch((error) => {
@@ -65,6 +61,24 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.expensesSubscription.unsubscribe();
+  }
+
+  onDateChange(): void {
+    this.fetchExpensesAndIncome();
+  }
+
+  fetchExpensesAndIncome(): void {
+    this.expensesService
+      .getExpensesListener(this.bookletId, this.selectedMonth, this.selectedYear)
+      .then((observable) => {
+        this.expensesSubscription = observable.subscribe((expenses) => {
+          this.expenses = expenses.filter(expense => !expense.isIncome);
+          this.income = expenses.filter(expense => expense.isIncome);
+        });
+      })
+      .catch((error) => {
+        console.error('Error fetching expenses:', error);
+      });
   }
 
   async addExpenseOrIncome(): Promise<void> {

@@ -61,12 +61,16 @@ export class ExpensesService {
     }
   }
 
-  async getExpensesListener(bookletId: string): Promise<Observable<Expense[]>> {
+  async getExpensesListener(bookletId: string, month: number, year: number): Promise<Observable<Expense[]>> {
     console.log('Getting expenses for booklet ID:', bookletId); // Add debugging log
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0);
     return new Observable<Expense[]>((observer) => {
       const q = query(
         collection(this.firestore, 'expenses'),
-        where('bookletId', '==', bookletId)
+        where('bookletId', '==', bookletId),
+        where('date', '>=', startDate),
+        where('date', '<=', endDate)
       );
 
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
