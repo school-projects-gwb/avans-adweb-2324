@@ -17,6 +17,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CategoryOverviewComponent } from '../category-overview/category-overview.component';
 import { Category } from '../../models/category.models';
 import { CategoriesService } from '../../services/categories.service';
+import { CdkDrag, CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-expenses-income',
@@ -29,6 +30,8 @@ import { CategoriesService } from '../../services/categories.service';
     MatInputModule,
     CommonModule,
     CategoryOverviewComponent,
+    CdkDropList,
+    CdkDrag,
   ],
 })
 export class ExpensesIncomeComponent implements OnInit, OnDestroy {
@@ -66,6 +69,14 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private route: ActivatedRoute
   ) {}
+
+  onDrop(event: CdkDragDrop<any[]>) {
+  const droppedItem = event.item.data;
+  console.log(droppedItem);
+  const dropIndex = event.currentIndex;
+  console.log("Drop index:", dropIndex);
+  // Perform further actions as needed, such as adding the dropped category to the "Inkomsten" list
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {

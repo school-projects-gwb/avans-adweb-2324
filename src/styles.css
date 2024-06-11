@@ -91,3 +91,9 @@ progress.progressLimitNotReached::-webkit-progress-value {
 progress.progressLimitNotReached::-moz-progress-bar {
   background-color: var(--color-progress-limit-not-reached);
 }
+
+.example-custom-placeholder {
+  background: #ccc;
+  border: dotted 3px #999;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
