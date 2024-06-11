@@ -103,3 +103,4 @@ export class ExpensesService {
     await updateDoc(ref, { ...expense });
   }
 }
+
