@@ -10,6 +10,8 @@ import {
   onSnapshot,
   query,
   where,
+  deleteDoc,
+  updateDoc,
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 
@@ -89,5 +91,15 @@ export class ExpensesService {
 
       return () => unsubscribe();
     });
+  }
+
+  async deleteExpense(expenseId: string): Promise<void> {
+    const ref = doc(this.firestore, 'expenses', expenseId);
+    await deleteDoc(ref);
+  }
+
+  async updateExpense(expense: Expense): Promise<void> {
+    const ref = doc(this.firestore, 'expenses', expense.id);
+    await updateDoc(ref, { ...expense });
   }
 }

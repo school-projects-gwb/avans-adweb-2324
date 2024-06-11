@@ -25,6 +25,12 @@
                 <span class="text-red-500">
                   <b>€{{ expense.amount }}</b>
                 </span>
+                <button (click)="editExpense(expense)">
+                  <span class="material-icons text-light ml-2 text-2xl">edit</span>
+                </button>
+                <button (click)="deleteExpense(expense.id)">
+                  <span class="material-icons text-light ml-2 text-2xl">delete</span>
+                </button>
               </div>
             </div>
             <hr class="expense-divider">
@@ -46,6 +52,12 @@
                 <span class="text-green-500">
                   <b>€{{ incomeItem.amount }}</b>
                 </span>
+                <button (click)="editExpense(incomeItem)">
+                  <span class="material-icons text-light ml-2 text-2xl">edit</span>
+                </button>
+                <button (click)="deleteExpense(incomeItem.id)">
+                  <span class="material-icons text-light ml-2 text-2xl">delete</span>
+                </button>
               </div>
             </div>
             <hr class="expense-divider">

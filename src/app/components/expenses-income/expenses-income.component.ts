@@ -95,10 +95,31 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
         await this.expensesService.createExpense(result.expense);
       });
   }
+
+  async deleteExpense(expenseId: string | undefined): Promise<void> {
+    if (!expenseId) return;
+    await this.expensesService.deleteExpense(expenseId);
+    this.fetchExpensesAndIncome();
+  }
+
+  editExpense(expense: Expense): void {
+    const dialogRef = this.dialog.open(ExpenseCreateDialogComponent, {
+      width: '270px',
+      data: {
+        expense: { ...expense },
+      },
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe(async (result: ExpenseDialogResult | undefined) => {
+        if (!result) return;
+        await this.expensesService.updateExpense(result.expense);
+      });
+  }
 }
 
 export interface Expense {
-  id?: string;
+  id: string;
   date: Date;
   amount: number;
   bookletId: string;
