@@ -88,6 +88,7 @@ export interface Expense {
   amount: number;
   bookletId: string;
   name: string;
+  isIncome: boolean;
 }
 
 export interface Income {
