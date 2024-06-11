@@ -40,7 +40,7 @@ export class ExpenseCreateDialogComponent {
     this.formGroup = this.fb.group({
       name: [this.data.expense.name, [Validators.required]],
       amount: [this.data.expense.amount, [Validators.required, Validators.min(0.01)]],
-      date: [this.data.expense.date, Validators.required],
+      date: [this.data.expense.date || new Date(), Validators.required],
       isIncome: [this.data.expense.isIncome ?? false]
     });
   }

@@ -16,7 +16,7 @@
           <li *ngFor="let expense of expenses" class="mt-4">
             <div class="flex flex-row mb-4 expense-item" data-emoji="💸">
               <div>
-                <span class="font-bold">{{ expense.name }} ({{ expense.isIncome ? 'Income' : 'Expense' }})</span>
+                <span class="font-bold">{{ expense.name }}</span>
                 <br>
                 <span class="text-gray-400">{{ expense.date | date:'mediumDate' }}</span>
               </div>
