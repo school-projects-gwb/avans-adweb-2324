@@ -23,7 +23,7 @@ import { CategoryOverviewComponent } from "../category-overview/category-overvie
 export class ExpensesIncomeComponent implements OnInit, OnDestroy {
   @Input() bookletId!: string;  
   expenses: Expense[] = [];  
-  income: Income[] = []; 
+  income: Expense[] = []; 
   newExpense: Partial<Expense> = {};
   expensesSubscription: Subscription = new Subscription();
 
@@ -49,7 +49,8 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
             .getExpensesListener(this.bookletId)
             .then((observable) => {
               this.expensesSubscription = observable.subscribe((expenses) => {
-                this.expenses = expenses;
+                this.expenses = expenses.filter(expense => !expense.isIncome);
+                this.income = expenses.filter(expense => expense.isIncome);
               });
             })
             .catch((error) => {
@@ -66,11 +67,11 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
     this.expensesSubscription.unsubscribe();
   }
 
-  async addExpense(): Promise<void> {
+  async addExpenseOrIncome(): Promise<void> {
     const dialogRef = this.dialog.open(ExpenseCreateDialogComponent, {
       width: '270px',
       data: {
-        expense: { bookletId: this.bookletId, name: '' },
+        expense: { bookletId: this.bookletId, name: '', isIncome: false },
       },
     });
     dialogRef
@@ -89,11 +90,4 @@ export interface Expense {
   bookletId: string;
   name: string;
   isIncome: boolean;
-}
-
-export interface Income {
-  id?: string;
-  date: Date;
-  amount: number;
-  bookletId: string;
 }

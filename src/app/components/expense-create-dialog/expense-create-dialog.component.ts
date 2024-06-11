@@ -53,6 +53,7 @@ export class ExpenseCreateDialogComponent {
 
   save(): void {
     if (this.formGroup.valid) {
+      this.data.expense.name = this.formGroup.value.name;
       this.data.expense.amount = this.formGroup.value.amount;
       this.data.expense.date = this.formGroup.value.date;
       this.data.expense.isIncome = this.formGroup.value.isIncome;

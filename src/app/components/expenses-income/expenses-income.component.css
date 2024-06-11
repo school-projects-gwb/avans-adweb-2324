@@ -26,7 +26,7 @@
 }
 
 .expense-item::before {
-  content: "💸";
+  content: attr(data-emoji);
   font-size: 2rem;
   margin-right: 10px;
   flex-shrink: 0; /* Ensure the emoji only takes up its own width */
