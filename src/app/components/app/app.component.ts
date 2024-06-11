@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { BookletOverviewComponent } from './components/booklet-overview/booklet-overview.component';
-import { LoggedInUserComponent } from './components/logged-in-user/logged-in-user.component';
+import { BookletOverviewComponent } from '../booklet-overview/booklet-overview.component';
+import { LoggedInUserComponent } from '../logged-in-user/logged-in-user.component';
 
 @Component({
   selector: 'app-root',
