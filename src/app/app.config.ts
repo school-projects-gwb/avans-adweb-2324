@@ -8,6 +8,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -19,15 +20,7 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(provideFirestore(() => getFirestore())),
     importProvidersFrom(
       provideFirebaseApp(() =>
-        initializeApp({
-          projectId: 'huishoudboekje-79473',
-          appId: '1:859373289692:web:0726a7c3c61c831e483419',
-          storageBucket: 'huishoudboekje-79473.appspot.com',
-          apiKey: 'AIzaSyAzpcnNE2wPllB2Gi-lFUmlQkcMBFz4dEY',
-          authDomain: 'huishoudboekje-79473.firebaseapp.com',
-          messagingSenderId: '859373289692',
-          measurementId: 'G-0RBEH7LYD4',
-        })
+        initializeApp(environment.firebase)
       )
     ),
     importProvidersFrom(provideAuth(() => getAuth())),
