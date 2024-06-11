@@ -8,6 +8,7 @@ export class Expense {
     name: string;
     isIncome: boolean;
     categoryId: string;
+    categoryName?: string
   
     constructor(id: string, bookletId: string, amount: number, date: Date, name: string, isIncome: boolean, categoryId: string) {
       this.id = id;

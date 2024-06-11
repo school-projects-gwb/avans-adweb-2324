@@ -70,12 +70,21 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {}
 
-  onDrop(event: CdkDragDrop<any[]>) {
-  const droppedItem = event.item.data;
-  console.log(droppedItem);
-  const dropIndex = event.currentIndex;
-  console.log("Drop index:", dropIndex);
-  // Perform further actions as needed, such as adding the dropped category to the "Inkomsten" list
+  async onDrop(event: CdkDragDrop<unknown[]>) {
+    const droppedItem = event.item.data;
+    if (!droppedItem) return;
+
+    const dropIndex = (event.currentIndex == 0 ? 1 : event.currentIndex) - 1;
+
+    const isExpense = event.container.id === 'expense-component';
+    const target = isExpense
+      ? this.expenses[dropIndex]
+      : this.income[dropIndex];
+
+    if (!target) return;
+
+    target.categoryId = droppedItem.id;
+    await this.expensesService.updateExpense(target);
   }
 
   ngOnInit(): void {
@@ -96,8 +105,6 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
               return;
             }
 
-            this.fetchExpensesAndIncome();
-
             this.categoriesService
               .getCategoriesListener(this.bookletId)
               .then((observable) => {
@@ -110,6 +117,8 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
               .catch((error) => {
                 console.error('Error fetching categories:', error);
               });
+
+            this.fetchExpensesAndIncome();
           }
         );
       })
@@ -135,8 +144,17 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
       )
       .then((observable) => {
         this.expensesSubscription = observable.subscribe((expenses) => {
-          this.expenses = expenses.filter((expense) => !expense.isIncome);
-          this.income = expenses.filter((expense) => expense.isIncome);
+          const mappedExpenses = expenses.map((expense) => {
+            const category = this.categories.find(c => c.id === expense.categoryId);
+            return {
+              ...expense,
+              categoryName: category ? category.name : '/'
+            };
+          });
+    
+          // Filter the mapped expenses into income and non-income
+          this.expenses = mappedExpenses.filter((expense) => !expense.isIncome);
+          this.income = mappedExpenses.filter((expense) => expense.isIncome);
         });
       })
       .catch((error) => {
@@ -195,4 +213,6 @@ export interface Expense {
   bookletId: string;
   name: string;
   isIncome: boolean;
+  categoryId: string;
+  categoryName: string;
 }

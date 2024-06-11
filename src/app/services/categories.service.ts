@@ -71,7 +71,7 @@ export class CategoriesService {
                   const formattedAmount = expenseData['isIncome'] ? expenseData['amount'] : -expenseData['amount'];
                   return sum + formattedAmount;
                 }, 0);
-                category.totalAmount = totalAmount;
+                category.totalAmount = Math.round(totalAmount * 100) / 100;
                 observer.next(categories);
               },
               (error) => {
