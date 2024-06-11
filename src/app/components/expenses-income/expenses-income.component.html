@@ -8,17 +8,23 @@
       <h2 class="title ml-8">Overzicht Uitgaven en Inkomsten</h2>
     </div>
     
-    <div class="mt-8">
+    <div class="mt-8 overview-list-container">
       <h3 class="text-xl font-bold mb-4">Uitgaven</h3>
       <ul class="bg-background p-6 text-dark rounded-xl container-border">
-        <li *ngFor="let expense of expenses">{{ expense.amount }} - {{ expense.date | date:'mediumDate' }}</li>
+        <li *ngFor="let expense of expenses" class="expense-item">
+          <div class="expense-details">
+            <span class="expense-name">{{ expense.name }}</span>
+            <span class="expense-date">{{ expense.date | date:'mediumDate' }}</span>
+          </div>
+          <span class="expense-amount">{{ expense.amount | currency:'EUR' }}</span>
+        </li>
       </ul>
       <div class="hellokitty-background">
         <button (click)="addExpense()" class="button text-xl ml-8">Uitgave Toevoegen</button>
       </div>
     </div>
   
-    <div class="mt-8">
+    <div class="mt-8 overview-list-container">
       <h3 class="text-xl font-bold mb-4">Inkomsten</h3>
       <ul class="bg-background p-6 text-dark rounded-xl container-border">
         <li *ngFor="let incomeItem of income">{{ incomeItem }}</li>

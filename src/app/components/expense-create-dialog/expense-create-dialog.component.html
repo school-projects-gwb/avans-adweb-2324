@@ -1,5 +1,9 @@
 <div>
     <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="data.expense.name" type="text" />
+    </mat-form-field>
+    <mat-form-field>
       <mat-label>Amount</mat-label>
       <input matInput [(ngModel)]="data.expense.amount" type="number" />
     </mat-form-field>

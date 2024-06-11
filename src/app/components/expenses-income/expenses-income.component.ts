@@ -69,7 +69,7 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(ExpenseCreateDialogComponent, {
       width: '270px',
       data: {
-        expense: { bookletId: this.bookletId },
+        expense: { bookletId: this.bookletId, name: '' },
       },
     });
     dialogRef
@@ -86,6 +86,7 @@ export interface Expense {
   date: Date;
   amount: number;
   bookletId: string;
+  name: string;
 }
 
 export interface Income {

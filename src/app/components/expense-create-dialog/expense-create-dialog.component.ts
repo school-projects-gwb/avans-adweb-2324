@@ -13,7 +13,7 @@ import { NgIf } from '@angular/common';
   styleUrls: ['./expense-create-dialog.component.css']
 })
 export class ExpenseCreateDialogComponent {
-  private backupExpense: Partial<Expense> = { ...this.data.expense };
+  private backupExpense: Partial<Expense> = { ...this.data.expense, name: '' };
 
   constructor(
     public dialogRef: MatDialogRef<ExpenseCreateDialogComponent>,

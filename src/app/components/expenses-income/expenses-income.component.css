@@ -7,3 +7,58 @@
     border: 4px solid var(--border-color);
     border-radius: 0.5rem;
   }
+
+.expense-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid lightgrey;
+}
+
+.expense-item:last-child {
+  border-bottom: none;
+}
+
+.expense-item img {
+  width: 2rem;
+  height: 2rem;
+}
+
+.expense-item::before {
+  content: "💸";
+  font-size: 2rem;
+  margin-right: 10px;
+  flex-shrink: 0; /* Ensure the emoji only takes up its own width */
+}
+
+.expense-details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Allow the details to take up remaining space */
+}
+
+.expense-name {
+  font-weight: bold;
+}
+
+.expense-date {
+  color: grey;
+}
+
+.expense-amount {
+  color: #e10013;
+  font-weight: bold;
+  flex-shrink: 0; /* Ensure the amount only takes up its own width */
+}
+
+.overview-list-container {
+  width: 66.67%;
+  margin: 0 auto; /* Center the container */
+}
+
+h3 {
+  color: white;
+  font-weight: bold;
+  margin-top: 20px; 
+}
