@@ -39,67 +39,63 @@ export class CategoriesService {
     });
   }
 
-  async getCategoriesListener(
-    bookletId: string
-  ): Promise<Observable<Category[]>> {
+  async getCategoriesListener(bookletId: string): Promise<Observable<Category[]>> {
     console.log('Getting categories for booklet ID:', bookletId);
     return new Observable<Category[]>((observer) => {
-      const q = query(
+      const categoriesQuery = query(
         collection(this.firestore, 'categories'),
         where('bookletId', '==', bookletId)
       );
-
-      const unsubscribe = onSnapshot(
-        q,
-        async (querySnapshot) => {
+  
+      const unsubscribeCategories = onSnapshot(
+        categoriesQuery,
+        async (categoriesSnapshot) => {
           const categories: Category[] = [];
           const expensePromises: Promise<ExpenseSum>[] = [];
-
-          querySnapshot.forEach((doc) => {
+  
+          categoriesSnapshot.forEach((doc) => {
             const category = categoryConverter.fromFirestore(doc, {});
             categories.push(category);
-
+  
             const expensesQuery = query(
               collection(this.firestore, 'expenses'),
               where('categoryId', '==', doc.id),
               where('bookletId', '==', bookletId)
             );
-            const expensePromise = new Promise<ExpenseSum>((resolve) => {
-              onSnapshot(expensesQuery, (expensesSnapshot) => {
-                const totalAmount = expensesSnapshot.docs.reduce(
-                  (sum, expenseDoc) => {
-                    const expenseData = expenseDoc.data();
-                    return sum + (expenseData['amount'] || 0);
-                  },
-                  0
-                );
-                resolve({ categoryId: doc.id, totalAmount });
-              });
-            });
-
-            expensePromises.push(expensePromise);
-          });
-
-          const expenseSums = await Promise.all(expensePromises);
-
-          categories.forEach((category) => {
-            const expenseSum = expenseSums.find(
-              (exp) => exp['categoryId'] === category.id
+  
+            onSnapshot(
+              expensesQuery,
+              (expensesSnapshot) => {
+                const totalAmount = expensesSnapshot.docs.reduce((sum, expenseDoc) => {
+                  const expenseData = expenseDoc.data();
+                  const formattedAmount = expenseData['isIncome'] ? expenseData['amount'] : -expenseData['amount'];
+                  return sum + formattedAmount;
+                }, 0);
+                category.totalAmount = totalAmount;
+                observer.next(categories);
+              },
+              (error) => {
+                console.error('Error getting expenses for category:', error);
+              }
             );
-            category.totalAmount = expenseSum ? expenseSum['totalAmount'] : 0;
           });
-
-          observer.next(categories);
+  
+          Promise.all(expensePromises).then(() => {
+            observer.next(categories);
+          });
         },
         (error) => {
           console.error('Error getting categories:', error);
           observer.error(error);
         }
       );
-
-      return () => unsubscribe();
+  
+      return () => {
+        unsubscribeCategories();
+      };
     });
   }
+  
 
   async deleteCategory(category: Category): Promise<void> {
     const ref = doc(this.firestore, 'categories', category.id);
