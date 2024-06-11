@@ -49,8 +49,8 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
             .getExpensesListener(this.bookletId)
             .then((observable) => {
               this.expensesSubscription = observable.subscribe((expenses) => {
-                this.expenses = expenses.filter(expense => !expense.isIncome);
-                this.income = expenses.filter(expense => expense.isIncome);
+                this.expenses = expenses.filter(expense => !expense.isIncome).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+                this.income = expenses.filter(expense => expense.isIncome).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
               });
             })
             .catch((error) => {
