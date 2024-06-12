@@ -11,7 +11,8 @@ import {
   where,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-import { Category, categoryConverter } from '../models/category.models';
+import { Category } from '../models/category.models';
+import { categoryConverter } from '../models/firestore-converters/category.converter';
 
 @Injectable({
   providedIn: 'root',
@@ -39,38 +40,45 @@ export class CategoriesService {
     });
   }
 
-  async getCategoriesListener(bookletId: string): Promise<Observable<Category[]>> {
+  async getCategoriesListener(
+    bookletId: string
+  ): Promise<Observable<Category[]>> {
     console.log('Getting categories for booklet ID:', bookletId);
     return new Observable<Category[]>((observer) => {
       const categoriesQuery = query(
         collection(this.firestore, 'categories'),
         where('bookletId', '==', bookletId)
       );
-  
+
       const unsubscribeCategories = onSnapshot(
         categoriesQuery,
         async (categoriesSnapshot) => {
           const categories: Category[] = [];
           const expensePromises: Promise<ExpenseSum>[] = [];
-  
+
           categoriesSnapshot.forEach((doc) => {
             const category = categoryConverter.fromFirestore(doc, {});
             categories.push(category);
-  
+
             const expensesQuery = query(
               collection(this.firestore, 'expenses'),
               where('categoryId', '==', doc.id),
               where('bookletId', '==', bookletId)
             );
-  
+
             onSnapshot(
               expensesQuery,
               (expensesSnapshot) => {
-                const totalAmount = expensesSnapshot.docs.reduce((sum, expenseDoc) => {
-                  const expenseData = expenseDoc.data();
-                  const formattedAmount = expenseData['isIncome'] ? expenseData['amount'] : -expenseData['amount'];
-                  return sum + formattedAmount;
-                }, 0);
+                const totalAmount = expensesSnapshot.docs.reduce(
+                  (sum, expenseDoc) => {
+                    const expenseData = expenseDoc.data();
+                    const formattedAmount = expenseData['isIncome']
+                      ? expenseData['amount']
+                      : -expenseData['amount'];
+                    return sum + formattedAmount;
+                  },
+                  0
+                );
                 category.totalAmount = Math.round(totalAmount * 100) / 100;
                 observer.next(categories);
               },
@@ -79,7 +87,7 @@ export class CategoriesService {
               }
             );
           });
-  
+
           Promise.all(expensePromises).then(() => {
             observer.next(categories);
           });
@@ -89,13 +97,12 @@ export class CategoriesService {
           observer.error(error);
         }
       );
-  
+
       return () => {
         unsubscribeCategories();
       };
     });
   }
-  
 
   async deleteCategory(category: Category): Promise<void> {
     const ref = doc(this.firestore, 'categories', category.id);
