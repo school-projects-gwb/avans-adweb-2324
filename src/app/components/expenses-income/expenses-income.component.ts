@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { Firestore } from '@angular/fire/firestore';
 import { FormsModule } from '@angular/forms'; // Import FormsModule
 import { MatFormFieldModule } from '@angular/material/form-field'; // Import Angular Material modules
 import { MatInputModule } from '@angular/material/input'; // Import Angular Material modules
@@ -64,7 +63,6 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
     private expensesService: ExpensesService,
     private categoriesService: CategoriesService,
     private authService: AuthService,
-    private firestore: Firestore,
     private router: Router,
     private dialog: MatDialog,
     private route: ActivatedRoute

@@ -30,7 +30,6 @@ import {MatSelectModule} from '@angular/material/select';
     MatDialogModule,
   ],
   templateUrl: './expense-create-dialog.component.html',
-  styleUrls: ['./expense-create-dialog.component.css'],
   providers: [MatDatepickerModule, MatNativeDateModule]
 })
 export class ExpenseCreateDialogComponent {

@@ -9,7 +9,6 @@ import { NgIf } from '@angular/common';
   standalone: true,
   imports: [NgIf, RouterModule],
   templateUrl: './logged-in-user.component.html',
-  styleUrl: './logged-in-user.component.css',
 })
 export class LoggedInUserComponent implements OnInit {
   currentUserSubscription: Subscription = new Subscription();
