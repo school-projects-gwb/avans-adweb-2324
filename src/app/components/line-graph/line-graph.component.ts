@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { ChartDataset, ChartOptions, ChartData } from 'chart.js';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ExpensesService } from '../../services/expenses.service';
 import { CommonModule } from '@angular/common';
+import { ChartConfiguration, ChartOptions } from 'chart.js';
 
 @Component({
   selector: 'app-line-graph',
@@ -12,38 +13,44 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./line-graph.component.css']
 })
 export class LineGraphComponent implements OnInit {
-  lineChartData: ChartData<'line'> = {
+  isBrowser: boolean;
+  public lineChartData: ChartConfiguration<'line'>['data'] = {
     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
     datasets: [
-      { data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A' },
-      { data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B' }
+      {
+        data: [],
+        label: 'Series A',
+        fill: true,
+        tension: 0.5
+      }
     ]
   };
-  lineChartOptions: ChartOptions<'line'> = {
-    responsive: true,
+  public lineChartOptions: ChartOptions<'line'> = {
+    responsive: true
   };
-  lineChartColors = [
-    {
-      borderColor: 'black',
-      backgroundColor: 'rgba(255,0,0,0.3)',
-    },
-  ];
-  lineChartLegend = true;
-  lineChartType = 'line' as const;
-  lineChartPlugins = [];
 
-  constructor(private expensesService: ExpensesService) { }
-
-  ngOnInit() {
-    this.fetchData();
+  constructor(
+    private expensesService: ExpensesService,
+    @Inject(PLATFORM_ID) private platformId: object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
-  fetchData() {
-    // Fetch data from ExpensesService and update lineChartData and lineChartLabels
-    // Example:
-    // this.expensesService.getExpensesListener(bookletId, month, year).subscribe(expenses => {
-    //   this.lineChartData = ...;
-    //   this.lineChartLabels = ...;  
-    // });
+  ngOnInit() {
+    if (this.isBrowser) {
+      console.log('LineGraphComponent initialized');
+      this.generateRandomData();
+    }
+  }
+
+  generateRandomData() {
+    const data = [];
+    const labels = this.lineChartData.labels;
+    if (labels) {
+      for (let i = 0; i < labels.length; i++) {
+        data.push(Math.floor(Math.random() * 100));
+      }
+      this.lineChartData.datasets[0].data = data;
+    }
   }
 }

@@ -1,6 +1,10 @@
-<canvas baseChart
+<h2>Debug: Line Graph Component Loaded</h2>
+<div *ngIf="isBrowser">Debug: isBrowser is true</div>
+
+<div style="display: block;" *ngIf="isBrowser">
+  <canvas baseChart
     [data]="lineChartData"
     [options]="lineChartOptions"
-    [type]="lineChartType"
-    [legend]="lineChartLegend">
-</canvas>
+    [type]="'line'">
+  </canvas>
+</div>
