@@ -11,7 +11,8 @@ import {
   where,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-import { Category, categoryConverter } from '../models/category.models';
+import { Category } from '../models/category.models';
+import { categoryConverter } from '../models/firestore-converters/category.converter';
 
 @Injectable({
   providedIn: 'root',
@@ -44,18 +45,18 @@ export class CategoriesService {
   ): Promise<Observable<Category[]>> {
     console.log('Getting categories for booklet ID:', bookletId);
     return new Observable<Category[]>((observer) => {
-      const q = query(
+      const categoriesQuery = query(
         collection(this.firestore, 'categories'),
         where('bookletId', '==', bookletId)
       );
 
-      const unsubscribe = onSnapshot(
-        q,
-        async (querySnapshot) => {
+      const unsubscribeCategories = onSnapshot(
+        categoriesQuery,
+        async (categoriesSnapshot) => {
           const categories: Category[] = [];
           const expensePromises: Promise<ExpenseSum>[] = [];
 
-          querySnapshot.forEach((doc) => {
+          categoriesSnapshot.forEach((doc) => {
             const category = categoryConverter.fromFirestore(doc, {});
             categories.push(category);
 
@@ -64,32 +65,32 @@ export class CategoriesService {
               where('categoryId', '==', doc.id),
               where('bookletId', '==', bookletId)
             );
-            const expensePromise = new Promise<ExpenseSum>((resolve) => {
-              onSnapshot(expensesQuery, (expensesSnapshot) => {
+
+            onSnapshot(
+              expensesQuery,
+              (expensesSnapshot) => {
                 const totalAmount = expensesSnapshot.docs.reduce(
                   (sum, expenseDoc) => {
                     const expenseData = expenseDoc.data();
-                    return sum + (expenseData['amount'] || 0);
+                    const formattedAmount = expenseData['isIncome']
+                      ? expenseData['amount']
+                      : -expenseData['amount'];
+                    return sum + formattedAmount;
                   },
                   0
                 );
-                resolve({ categoryId: doc.id, totalAmount });
-              });
-            });
-
-            expensePromises.push(expensePromise);
-          });
-
-          const expenseSums = await Promise.all(expensePromises);
-
-          categories.forEach((category) => {
-            const expenseSum = expenseSums.find(
-              (exp) => exp['categoryId'] === category.id
+                category.totalAmount = Math.round(totalAmount * 100) / 100;
+                observer.next(categories);
+              },
+              (error) => {
+                console.error('Error getting expenses for category:', error);
+              }
             );
-            category.totalAmount = expenseSum ? expenseSum['totalAmount'] : 0;
           });
 
-          observer.next(categories);
+          Promise.all(expensePromises).then(() => {
+            observer.next(categories);
+          });
         },
         (error) => {
           console.error('Error getting categories:', error);
@@ -97,7 +98,9 @@ export class CategoriesService {
         }
       );
 
-      return () => unsubscribe();
+      return () => {
+        unsubscribeCategories();
+      };
     });
   }
 

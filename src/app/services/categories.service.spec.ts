@@ -1,27 +1,27 @@
 import { TestBed } from '@angular/core/testing';
-
 import { CategoriesService } from './categories.service';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { importProvidersFrom } from '@angular/core';
-import { environment } from '../../environments/environment';
-import { Firestore, getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { Firestore } from '@angular/fire/firestore';
+import { Auth } from '@angular/fire/auth';
+import { of } from 'rxjs';
 
 class MockFirestore {}
+
+const mockAngularFireAuth: unknown = {
+  auth: jasmine.createSpyObj('auth', {
+    signInWithEmailAndPassword: Promise.resolve(),
+    signOut: Promise.resolve(),
+  }),
+  authState: of(null)
+};
 
 describe('CategoriesService', () => {
   let service: CategoriesService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [],
       providers: [
         { provide: Firestore, useClass: MockFirestore },
-        importProvidersFrom(provideFirestore(() => getFirestore())),
-        importProvidersFrom(
-          provideFirebaseApp(() =>
-            initializeApp(environment.firebase)
-          )
-        ),
+        { provide: Auth, useValue: mockAngularFireAuth },
       ],
     }).compileComponents();
 

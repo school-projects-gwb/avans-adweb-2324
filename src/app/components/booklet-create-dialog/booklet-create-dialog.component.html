@@ -81,7 +81,7 @@
         mat-button
         aria-label="Archiveren"
         class="text-red-600 mt-4"
-        [mat-dialog-close]="{ task: data.booklet, delete: true }"
+        mat-button (click)="archive()"
       >
         Archiveren
       </button>

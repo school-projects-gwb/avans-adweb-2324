@@ -60,8 +60,20 @@ export class BookletCreateDialogComponent implements OnInit {
     });
   }
 
+  archive(): void {
+    this.dialogRef.close({
+      booklet: {
+        ...this.data.booklet,
+        ...this.basicInfoFormGroup.value
+      },
+      delete: true
+    });
+  }
+
   cancel(): void {
-    this.dialogRef.close();
+    this.dialogRef.close({
+      booklet: this.basicInfoFormGroup.value
+    });
   }
 
   addAuthenticatedUserEmail(emailToAdd: string): void {

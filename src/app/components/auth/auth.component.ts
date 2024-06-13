@@ -18,7 +18,6 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [NgIf, ReactiveFormsModule, MatInputModule, MatRadioModule],
   templateUrl: './auth.component.html',
-  styleUrl: './auth.component.css',
 })
 export class AuthComponent implements OnInit {
   formGroup!: FormGroup;

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Expense, expenseConverter } from '../models/expense.models';
+import { Expense } from '../models/expense.models';
 import {
   Firestore,
   addDoc,
@@ -14,6 +14,7 @@ import {
   updateDoc,
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
+import { expenseConverter } from '../models/firestore-converters/expense.converter';
 
 @Injectable({
   providedIn: 'root',

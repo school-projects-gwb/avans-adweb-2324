@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Booklet, bookletConverter } from '../models/booklet.models';
+import { Booklet } from '../models/booklet.models';
 import {
   Firestore,
   addDoc,
@@ -12,6 +12,7 @@ import {
   where,
 } from '@angular/fire/firestore';
 import { CurrentUserResult } from './auth.service';
+import { bookletConverter } from '../models/firestore-converters/booklet.converter';
 
 @Injectable({
   providedIn: 'root',

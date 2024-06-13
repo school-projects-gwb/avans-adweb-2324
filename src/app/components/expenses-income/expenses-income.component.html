@@ -1,4 +1,4 @@
-<section class="p-16 hellokitty-background">
+<section class="p-16 hellokitty-background" cdkDropListGroup>
   <div class="flex flex-row items-center">
     <img
       class="w-1/12"
@@ -13,13 +13,15 @@
       <div class="mt-8">
         <button (click)="addExpenseOrIncome()" class="button mt-4 text-md w-full">Uitgave of inkomen Toevoegen</button>
         <h3 class="text-xl font-bold mb-4">Uitgaven</h3>
-        <ul class="bg-background p-6 text-dark rounded-xl container-border">
-          <li *ngFor="let expense of expenses" class="mt-4">
+        <ul class="bg-background p-6 text-dark rounded-xl container-border" [id]="'expense-component'" cdkDropList (cdkDropListDropped)="onDrop($event)">
+          <li *ngFor="let expense of expenses" class="mt-4" cdkDrag>
             <div class="flex flex-row mb-4 expense-item" data-emoji="💸">
               <div>
-                <span class="font-bold">{{ expense.name }}</span>
+                <span class="font-bold text-lg">{{ expense.name }}</span>
                 <br>
                 <span class="text-gray-400">{{ expense.date | date:'mediumDate' }}</span>
+                <br>
+                <span class="text-primary p-1 border border-border rounded-xl font-semibold mt-1 inline-block">{{ expense.categoryName }}</span>
               </div>
               <div class="ml-auto">
                 <span class="text-red-500">
@@ -40,13 +42,15 @@
       
       <div class="mt-8">
         <h3 class="text-xl font-bold mb-4">Inkomsten</h3>
-        <ul class="bg-background p-6 text-dark rounded-xl container-border">
-          <li *ngFor="let incomeItem of income" class="mt-4">
+        <ul class="bg-background p-6 text-dark rounded-xl container-border" [id]="'income-component'" cdkDropList (cdkDropListDropped)="onDrop($event)">
+          <li *ngFor="let incomeItem of income" class="mt-4" cdkDrag>
             <div class="flex flex-row mb-4 expense-item" data-emoji="💰">
               <div>
-                <span class="font-bold">{{ incomeItem.name }}</span>
+                <span class="font-bold text-lg">{{ incomeItem.name }}</span>
                 <br>
                 <span class="text-gray-400">{{ incomeItem.date | date:'mediumDate' }}</span>
+                <br>
+                <span class="text-primary p-1 border border-border rounded-xl font-semibold mt-1 inline-block">{{ incomeItem.categoryName }}</span>
               </div>
               <div class="ml-auto">
                 <span class="text-green-500">
@@ -85,7 +89,7 @@
           </select>
         </div>
       </div>
-      <app-categories></app-categories>
+      <app-categories [cdkDropListConnectedTo]="['expense-component', 'income-component']" cdkDropList></app-categories>
     </div>
   </div>
 </section>

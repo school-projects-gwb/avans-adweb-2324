@@ -6,9 +6,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MatOption } from '@angular/material/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { NgIf } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
+import { Category } from '../../models/category.models';
+import {MatSelectModule} from '@angular/material/select';
 
 @Component({
   selector: 'app-expense-create-dialog',
@@ -22,10 +24,12 @@ import { NgIf } from '@angular/common';
     MatDatepickerModule,
     MatNativeDateModule,
     MatCheckboxModule,
+    MatSelectModule,
+    MatOption,
+    NgFor,
     MatDialogModule,
   ],
   templateUrl: './expense-create-dialog.component.html',
-  styleUrls: ['./expense-create-dialog.component.css'],
   providers: [MatDatepickerModule, MatNativeDateModule]
 })
 export class ExpenseCreateDialogComponent {
@@ -41,7 +45,8 @@ export class ExpenseCreateDialogComponent {
       name: [this.data.expense.name, [Validators.required]],
       amount: [this.data.expense.amount, [Validators.required, Validators.min(0.01)]],
       date: [this.data.expense.date || new Date(), Validators.required],
-      isIncome: [this.data.expense.isIncome ?? false]
+      isIncome: [this.data.expense.isIncome ?? false],
+      categoryId: [this.data.expense?.categoryId || '']
     });
   }
 
@@ -57,6 +62,7 @@ export class ExpenseCreateDialogComponent {
       this.data.expense.amount = this.formGroup.value.amount;
       this.data.expense.date = this.formGroup.value.date;
       this.data.expense.isIncome = this.formGroup.value.isIncome;
+      this.data.expense.categoryId = this.formGroup.value.categoryId;
       this.dialogRef.close({ expense: this.data.expense });
     }
   }
@@ -64,6 +70,7 @@ export class ExpenseCreateDialogComponent {
 
 export interface ExpenseDialogData {
   expense: Partial<Expense>;
+  categories: Category[];
   enableDelete: boolean;
 }
 

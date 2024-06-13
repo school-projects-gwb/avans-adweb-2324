@@ -1,5 +1,4 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
 import { CommonModule, NgFor } from '@angular/common';
 import { Category } from '../../models/category.models';
 import { CategoriesService } from '../../services/categories.service';
@@ -7,12 +6,20 @@ import { AuthService } from '../../services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { CategoryCreateDialogComponent, CategoryDialogResult } from '../category-create-dialog/category-create-dialog.component';
+import {
+  CategoryCreateDialogComponent,
+  CategoryDialogResult,
+} from '../category-create-dialog/category-create-dialog.component';
+import {
+  CdkDrag,
+  CdkDragPlaceholder,
+  CdkDropList,
+} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-categories',
   standalone: true,
-  imports: [CommonModule, CdkDropList, CdkDrag, NgFor],
+  imports: [CommonModule, CdkDropList, CdkDrag, NgFor, CdkDragPlaceholder],
   templateUrl: './category-overview.component.html',
   styleUrl: './category-overview.component.css',
 })
@@ -66,6 +73,10 @@ export class CategoryOverviewComponent implements OnInit, OnDestroy {
       });
   }
 
+  onDragStart(event: Event) {
+    console.log(event);
+  }
+
   ngOnDestroy(): void {
     this.categoriesSubscription.unsubscribe();
   }
@@ -102,7 +113,7 @@ export class CategoryOverviewComponent implements OnInit, OnDestroy {
         category.name = result.category.name;
         category.budget = result.category.budget;
         category.targetDate = result.category.targetDate;
-        
+
         result.delete
           ? this.categoriesService.deleteCategory(category)
           : this.categoriesService.updateCategory(category);
