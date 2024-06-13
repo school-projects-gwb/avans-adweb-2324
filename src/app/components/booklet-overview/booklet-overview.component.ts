@@ -29,7 +29,7 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./booklet-overview.component.css'],
 })
 export class BookletOverviewComponent implements OnInit, OnDestroy {
-  currentUserSubscription: Subscription = new Subscription();
+  combinedSubscription: Subscription = new Subscription();
   booklets: Booklet[] = [];
   firestore = inject(Firestore);
 
@@ -41,34 +41,18 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.authService
-      .getIsAuthenticatedListener()
-      .then((observable) => {
-        this.currentUserSubscription = observable.subscribe(
-          (currentUserResult) => {
-            if (!currentUserResult.isLoggedIn) {
-              this.router.navigate(['/auth']);
-              return;
-            }
-
-            this.bookletService
-              .getBookletListener(currentUserResult)
-              .then((observable) => {
-                this.currentUserSubscription = observable.subscribe(
-                  (booklets) => {
-                    this.booklets = booklets;
-                  }
-                );
-              })
-              .catch((error) => {
-                console.error('Error fetching booklets:', error);
-              });
-          }
-        );
-      })
-      .catch((error) => {
+    this.combinedSubscription = this.bookletService.getCombinedUserAndBooklets().subscribe({
+      next: ({ currentUserResult, booklets }) => {
+        if (!currentUserResult.isLoggedIn) {
+          this.router.navigate(['/auth']);
+          return;
+        }
+        this.booklets = booklets;
+      },
+      error: (error) => {
         console.error('Error:', error);
-      });
+      }
+    });
   }
 
   async addBooklet(): Promise<void> {
@@ -118,6 +102,6 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.currentUserSubscription.unsubscribe();
+    this.combinedSubscription.unsubscribe();
   }
 }

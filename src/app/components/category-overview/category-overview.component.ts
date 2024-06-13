@@ -40,37 +40,24 @@ export class CategoryOverviewComponent implements OnInit, OnDestroy {
     this.route.paramMap.subscribe((params) => {
       this.bookletId = params.get('id') || '';
     });
-    this.authService
-      .getIsAuthenticatedListener()
-      .then((observable) => {
-        this.categoriesSubscription = observable.subscribe(
-          (currentUserResult) => {
-            if (!currentUserResult.isLoggedIn) {
-              this.router.navigate(['/auth']);
-              return;
-            }
-            if (!this.bookletId) {
-              console.error('Error: bookletId is undefined');
-              return;
-            }
-            this.categoriesService
-              .getCategoriesListener(this.bookletId)
-              .then((observable) => {
-                this.categoriesSubscription = observable.subscribe(
-                  (categories) => {
-                    this.categories = categories;
-                  }
-                );
-              })
-              .catch((error) => {
-                console.error('Error fetching categories:', error);
-              });
-          }
-        );
-      })
-      .catch((error) => {
+    
+    if (!this.bookletId) {
+      console.error('Error: bookletId is undefined');
+      return;
+    }
+
+    this.categoriesSubscription = this.categoriesService.getCombinedUserAndCategories(this.bookletId).subscribe({
+      next: ({ currentUserResult, categories }) => {
+        if (!currentUserResult.isLoggedIn) {
+          this.router.navigate(['/auth']);
+          return;
+        }
+        this.categories = categories;
+      },
+      error: (error) => {
         console.error('Error:', error);
-      });
+      }
+    });
   }
 
   onDragStart(event: Event) {

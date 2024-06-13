@@ -9,7 +9,10 @@ import {
   ExpenseCreateDialogComponent,
   ExpenseDialogResult,
 } from '../expense-create-dialog/expense-create-dialog.component';
-import { ExpenseConfigData, ExpensesService } from '../../services/expenses.service';
+import {
+  ExpenseConfigData,
+  ExpensesService,
+} from '../../services/expenses.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { CategoryOverviewComponent } from '../category-overview/category-overview.component';
@@ -79,20 +82,22 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
       this.updateExpenseConfigData();
     });
 
-    this.expensesService.getCombinedData().subscribe(({ data, isAuthenticated }) => {
-      if (!isAuthenticated) {
-        this.router.navigate(['/auth']);
-        return;
-      }
+    this.expensesService
+      .getCombinedData()
+      .subscribe(({ data, isAuthenticated }) => {
+        if (!isAuthenticated) {
+          this.router.navigate(['/auth']);
+          return;
+        }
 
-      if (!data?.bookletId) {
-        console.error('Error: bookletId is undefined');
-        return;
-      }
+        if (!data?.bookletId) {
+          console.error('Error: bookletId is undefined');
+          return;
+        }
 
-      this.fetchCategories(data.bookletId);
-      this.fetchExpensesAndIncome(data.bookletId, data.month, data.year);
-    });
+        this.fetchCategories(data.bookletId);
+        this.fetchExpensesAndIncome(data.bookletId, data.month, data.year);
+      });
   }
 
   ngOnDestroy(): void {
@@ -101,13 +106,16 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
   }
 
   private fetchCategories(bookletId: string) {
-    this.categoriesService.getCategoriesListener(bookletId).then((observable) => {
-      this.categoriesSubscription = observable.subscribe((categories) => {
-        this.categories = categories;
+    this.categoriesSubscription = this.categoriesService
+      .getCategoriesListener(bookletId)
+      .subscribe({
+        next: (categories) => {
+          this.categories = categories;
+        },
+        error: (error) => {
+          console.error('Error fetching categories:', error);
+        },
       });
-    }).catch((error) => {
-      console.error('Error fetching categories:', error);
-    });
   }
 
   async onDrop(event: CdkDragDrop<unknown[]>) {
@@ -129,7 +137,11 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
 
   onDateChange(): void {
     this.updateExpenseConfigData();
-    this.fetchExpensesAndIncome(this.bookletId, this.selectedMonth, this.selectedYear);
+    this.fetchExpensesAndIncome(
+      this.bookletId,
+      this.selectedMonth,
+      this.selectedYear
+    );
   }
 
   private updateExpenseConfigData() {
@@ -143,19 +155,24 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
   }
 
   fetchExpensesAndIncome(bookletId: string, month: number, year: number): void {
-    this.expensesService.getExpensesListener(bookletId, month, year).then((observable) => {
-      this.expensesSubscription = observable.subscribe((expenses) => {
-        const mappedExpenses = expenses.map((expense) => {
-          const category = this.categories.find((c) => c.id === expense.categoryId);
-          return { ...expense, categoryName: category ? category.name : '/' };
-        });
+    this.expensesService
+      .getExpensesListener(bookletId, month, year)
+      .then((observable) => {
+        this.expensesSubscription = observable.subscribe((expenses) => {
+          const mappedExpenses = expenses.map((expense) => {
+            const category = this.categories.find(
+              (c) => c.id === expense.categoryId
+            );
+            return { ...expense, categoryName: category ? category.name : '/' };
+          });
 
-        this.expenses = mappedExpenses.filter((expense) => !expense.isIncome);
-        this.income = mappedExpenses.filter((expense) => expense.isIncome);
+          this.expenses = mappedExpenses.filter((expense) => !expense.isIncome);
+          this.income = mappedExpenses.filter((expense) => expense.isIncome);
+        });
+      })
+      .catch((error) => {
+        console.error('Error fetching expenses:', error);
       });
-    }).catch((error) => {
-      console.error('Error fetching expenses:', error);
-    });
   }
 
   async addExpenseOrIncome(): Promise<void> {
@@ -182,7 +199,11 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
   async deleteExpense(expenseId: string | undefined): Promise<void> {
     if (!expenseId) return;
     await this.expensesService.deleteExpense(expenseId);
-    this.fetchExpensesAndIncome(this.bookletId, this.selectedMonth, this.selectedYear);
+    this.fetchExpensesAndIncome(
+      this.bookletId,
+      this.selectedMonth,
+      this.selectedYear
+    );
   }
 
   editExpense(expense: Expense): void {

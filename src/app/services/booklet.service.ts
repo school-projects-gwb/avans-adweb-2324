@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 import { Booklet } from '../models/booklet.models';
 import {
   Firestore,
@@ -11,14 +12,14 @@ import {
   updateDoc,
   where,
 } from '@angular/fire/firestore';
-import { CurrentUserResult } from './auth.service';
+import { CurrentUserResult, AuthService } from './auth.service';
 import { bookletConverter } from '../models/firestore-converters/booklet.converter';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BookletService {
-  constructor(private firestore: Firestore) {}
+  constructor(private firestore: Firestore, private authService: AuthService) {}
 
   async createBooklet(
     booklet: Booklet,
@@ -49,6 +50,9 @@ export class BookletService {
     currentUserResult: CurrentUserResult,
     archived: boolean = false
   ): Promise<Observable<Booklet[]>> {
+    if (!currentUserResult || !currentUserResult.email)
+      return new Observable<Booklet[]>();
+
     return new Observable<Booklet[]>((observer) => {
       const q = query(
         collection(this.firestore, 'booklets'),
@@ -77,6 +81,26 @@ export class BookletService {
 
       return () => unsubscribe();
     });
+  }
+
+  getCombinedUserAndBooklets(
+    archived: boolean = false
+  ): Observable<{ currentUserResult: CurrentUserResult; booklets: Booklet[] }> {
+    return from(this.authService.getIsAuthenticatedListener()).pipe(
+      switchMap((authObservable) =>
+        authObservable.pipe(
+          switchMap((currentUserResult) =>
+            from(this.getBookletListener(currentUserResult, archived)).pipe(
+              switchMap((bookletObservable) =>
+                bookletObservable.pipe(
+                  map((booklets) => ({ currentUserResult, booklets }))
+                )
+              )
+            )
+          )
+        )
+      )
+    );
   }
 
   async archiveBooklet(booklet: Booklet): Promise<void> {

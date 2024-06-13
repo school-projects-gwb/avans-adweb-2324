@@ -10,22 +10,23 @@ import {
   updateDoc,
   where,
 } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
+import { switchMap, map, catchError } from 'rxjs/operators';
 import { Category } from '../models/category.models';
 import { categoryConverter } from '../models/firestore-converters/category.converter';
+import { AuthService, CurrentUserResult } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CategoriesService {
-  constructor(private firestore: Firestore) {}
+  constructor(private firestore: Firestore, private authService: AuthService) {}
 
   async createCategory(category: Category): Promise<Category> {
     const ref = await addDoc(
       collection(this.firestore, 'categories'),
       categoryConverter.toFirestore(category)
     );
-
     category.id = ref.id;
     return category;
   }
@@ -40,9 +41,9 @@ export class CategoriesService {
     });
   }
 
-  async getCategoriesListener(
-    bookletId: string
-  ): Promise<Observable<Category[]>> {
+  getCategoriesListener(bookletId: string): Observable<Category[]> {
+    if (!bookletId) return new Observable<Category[]>();
+
     return new Observable<Category[]>((observer) => {
       const categoriesQuery = query(
         collection(this.firestore, 'categories'),
@@ -51,7 +52,7 @@ export class CategoriesService {
 
       const unsubscribeCategories = onSnapshot(
         categoriesQuery,
-        async (categoriesSnapshot) => {
+        (categoriesSnapshot) => {
           const categories: Category[] = [];
           const expensePromises: Promise<ExpenseSum>[] = [];
 
@@ -65,26 +66,20 @@ export class CategoriesService {
               where('bookletId', '==', bookletId)
             );
 
-            onSnapshot(
-              expensesQuery,
-              (expensesSnapshot) => {
-                const totalAmount = expensesSnapshot.docs.reduce(
-                  (sum, expenseDoc) => {
-                    const expenseData = expenseDoc.data();
-                    const formattedAmount = expenseData['isIncome']
-                      ? expenseData['amount']
-                      : -expenseData['amount'];
-                    return sum + formattedAmount;
-                  },
-                  0
-                );
-                category.totalAmount = Math.round(totalAmount * 100) / 100;
-                observer.next(categories);
-              },
-              (error) => {
-                console.error('Error getting expenses for category:', error);
-              }
-            );
+            onSnapshot(expensesQuery, (expensesSnapshot) => {
+              const totalAmount = expensesSnapshot.docs.reduce(
+                (sum, expenseDoc) => {
+                  const expenseData = expenseDoc.data();
+                  const formattedAmount = expenseData['isIncome']
+                    ? expenseData['amount']
+                    : -expenseData['amount'];
+                  return sum + formattedAmount;
+                },
+                0
+              );
+              category.totalAmount = Math.round(totalAmount * 100) / 100;
+              observer.next(categories);
+            });
           });
 
           Promise.all(expensePromises).then(() => {
@@ -97,10 +92,31 @@ export class CategoriesService {
         }
       );
 
-      return () => {
-        unsubscribeCategories();
-      };
+      return () => unsubscribeCategories();
     });
+  }
+
+  getCombinedUserAndCategories(
+    bookletId: string
+  ): Observable<{
+    currentUserResult: CurrentUserResult;
+    categories: Category[];
+  }> {
+    return from(this.authService.getIsAuthenticatedListener()).pipe(
+      switchMap((authObservable) =>
+        authObservable.pipe(
+          switchMap((currentUserResult) => {
+            return this.getCategoriesListener(bookletId).pipe(
+              map((categories) => ({ currentUserResult, categories }))
+            );
+          })
+        )
+      ),
+      catchError((error) => {
+        console.error('Error in getCombinedUserAndCategories:', error);
+        throw error;
+      })
+    );
   }
 
   async deleteCategory(category: Category): Promise<void> {

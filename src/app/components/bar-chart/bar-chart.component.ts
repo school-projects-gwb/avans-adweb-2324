@@ -1,4 +1,10 @@
-import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+} from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import {
   BaseChartDirective,
@@ -60,20 +66,22 @@ export class BarChartComponent implements OnInit, OnDestroy {
       if (!isInitial) this.fetchExpensesAndIncome();
     });
 
-    this.expensesService.getCombinedData().subscribe(({ data, isAuthenticated }) => {
-      if (!isAuthenticated) {
-        this.router.navigate(['/auth']);
-        return;
-      }
+    this.expensesService
+      .getCombinedData()
+      .subscribe(({ data, isAuthenticated }) => {
+        if (!isAuthenticated) {
+          this.router.navigate(['/auth']);
+          return;
+        }
 
-      if (!data?.bookletId) {
-        console.error('Error: bookletId is undefined');
-        return;
-      }
+        if (!data?.bookletId) {
+          console.error('Error: bookletId is undefined');
+          return;
+        }
 
-      this.fetchCategories(data.bookletId);
-      this.fetchExpensesAndIncome();
-    });
+        this.fetchCategories(data.bookletId);
+        this.fetchExpensesAndIncome();
+      });
   }
 
   ngOnDestroy(): void {
@@ -82,13 +90,16 @@ export class BarChartComponent implements OnInit, OnDestroy {
   }
 
   private fetchCategories(bookletId: string) {
-    this.categoriesService.getCategoriesListener(bookletId).then((observable) => {
-      this.categoriesSubscription = observable.subscribe((categories) => {
-        this.categories = categories;
+    this.categoriesSubscription = this.categoriesService
+      .getCategoriesListener(bookletId)
+      .subscribe({
+        next: (categories) => {
+          this.categories = categories;
+        },
+        error: (error) => {
+          console.error('Error fetching categories:', error);
+        },
       });
-    }).catch((error) => {
-      console.error('Error fetching categories:', error);
-    });
   }
 
   fetchExpensesAndIncome(): void {
