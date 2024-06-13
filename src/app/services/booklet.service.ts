@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Booklet } from '../models/booklet.models';
 import {
   Firestore,
@@ -18,8 +18,6 @@ import { bookletConverter } from '../models/firestore-converters/booklet.convert
   providedIn: 'root',
 })
 export class BookletService {
-  private booklets: Booklet[] = [];
-
   constructor(private firestore: Firestore) {}
 
   async createBooklet(
@@ -93,16 +91,5 @@ export class BookletService {
     await updateDoc(ref, {
       isArchived: false,
     });
-  }
-
-  // Fetches a single booklet by id - currently returns mock data
-  getBooklet(id: number): Observable<Booklet> {
-    console.log(`Fetching booklet with id: ${id}`);
-    const booklet = this.booklets.find((b) => b.id === id.toString());
-    if (!booklet) {
-      console.error(`Booklet with id ${id} not found`);
-      throw new Error(`Booklet with id ${id} not found`);
-    }
-    return of(booklet);
   }
 }

@@ -21,9 +21,9 @@ import { expenseConverter } from '../models/firestore-converters/expense.convert
 })
 export class ExpensesService {
   private expenseConfigDataSource = new BehaviorSubject<ExpenseConfigData | null>(null);
-  private isAuthenticatedSource = new BehaviorSubject<boolean>(true);
+  expenseConfigData = this.expenseConfigDataSource.asObservable();
 
-  currentData = this.expenseConfigDataSource.asObservable();
+  private isAuthenticatedSource = new BehaviorSubject<boolean>(true);
   isAuthenticated$ = this.isAuthenticatedSource.asObservable();
 
   constructor(private firestore: Firestore, private authService: AuthService) {}
@@ -37,7 +37,7 @@ export class ExpensesService {
   }
 
   getCombinedData(): Observable<{ data: ExpenseConfigData | null, isAuthenticated: boolean }> {
-    return combineLatest([this.currentData, this.isAuthenticated$]).pipe(
+    return combineLatest([this.expenseConfigData, this.isAuthenticated$]).pipe(
       map(([data, isAuthenticated]) => ({ data, isAuthenticated }))
     );
   }

@@ -9,7 +9,7 @@ import { Auth } from '@angular/fire/auth';
 
 class MockFirestore {}
 
-const mockAngularFireAuth: any = {
+const mockAngularFireAuth: unknown = {
   auth: jasmine.createSpyObj('auth', {
     signInWithEmailAndPassword: Promise.resolve(),
     signOut: Promise.resolve(),

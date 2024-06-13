@@ -48,7 +48,7 @@ export class LineGraphComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.expensesService.currentData.subscribe((data) => {
+    this.expensesService.expenseConfigData.subscribe((data) => {
       const isInitial = this.data === null;
       this.data = data;
       if (!isInitial) this.fetchExpensesAndIncome();
