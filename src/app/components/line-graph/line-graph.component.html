@@ -1,9 +1,11 @@
-<div style="display: block;" *ngIf="isBrowser">
-  <canvas baseChart
+<div style="display: block mt-8" *ngIf="isBrowser">
+  <p class="text-white text-md">Inkomsten & uitgaven</p>
+  <canvas
+    baseChart
     [data]="lineChartData"
     [options]="lineChartOptions"
     [type]="'line'"
-    style="width: 100%; height: 400px;">
+    style="width: 100%; height: 400px"
+  >
   </canvas>
 </div>
-

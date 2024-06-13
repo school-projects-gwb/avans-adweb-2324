@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
 import User from '../models/user.models';
 import {
@@ -12,6 +12,7 @@ import {
 } from '@angular/fire/auth';
 import { FirebaseError } from '@angular/fire/app';
 import { Observable } from 'rxjs';
+import { ExpensesService } from './expenses.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +23,10 @@ export class AuthService {
   loggedInUserId!: string;
   loggedInUserEmail!: string;
 
-  constructor(private firestore: Firestore) {
+  constructor(
+    private firestore: Firestore,
+    private injector: Injector
+  ) {
     this.auth = getAuth(this.firestore.app);
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
@@ -30,6 +34,9 @@ export class AuthService {
       } else {
         this.isUserLoggedIn = false;
       }
+
+      const expensesService = this.injector.get(ExpensesService);
+      expensesService.updateAuthenticationStatus(this.isUserLoggedIn);
     });
   }
 

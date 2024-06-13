@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, map } from 'rxjs';
 import { Expense } from '../models/expense.models';
 import {
   Firestore,
@@ -20,14 +20,26 @@ import { expenseConverter } from '../models/firestore-converters/expense.convert
   providedIn: 'root',
 })
 export class ExpensesService {
-  private expenseConfigDataSource =
-    new BehaviorSubject<ExpenseConfigData | null>(null);
+  private expenseConfigDataSource = new BehaviorSubject<ExpenseConfigData | null>(null);
+  private isAuthenticatedSource = new BehaviorSubject<boolean>(true);
+
   currentData = this.expenseConfigDataSource.asObservable();
+  isAuthenticated$ = this.isAuthenticatedSource.asObservable();
 
   constructor(private firestore: Firestore, private authService: AuthService) {}
 
   updateExpenseConfigData(data: ExpenseConfigData) {
     this.expenseConfigDataSource.next(data);
+  }
+
+  updateAuthenticationStatus(status: boolean) {
+    this.isAuthenticatedSource.next(status);
+  }
+
+  getCombinedData(): Observable<{ data: ExpenseConfigData | null, isAuthenticated: boolean }> {
+    return combineLatest([this.currentData, this.isAuthenticated$]).pipe(
+      map(([data, isAuthenticated]) => ({ data, isAuthenticated }))
+    );
   }
 
   getExpenseConfigData(): ExpenseConfigData | null {

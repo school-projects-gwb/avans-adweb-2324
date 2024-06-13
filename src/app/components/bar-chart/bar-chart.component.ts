@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import {
   BaseChartDirective,
@@ -14,7 +14,6 @@ import { CategoriesService } from '../../services/categories.service';
 import { Expense } from '../expenses-income/expenses-income.component';
 import { Subscription } from 'rxjs';
 import { Category } from '../../models/category.models';
-import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -25,7 +24,7 @@ import { Router } from '@angular/router';
   templateUrl: './bar-chart.component.html',
   styleUrls: ['./bar-chart.component.css'],
 })
-export class BarChartComponent implements OnInit {
+export class BarChartComponent implements OnInit, OnDestroy {
   public barChartLegend = true;
   public barChartPlugins = [];
   isBrowser: boolean;
@@ -49,7 +48,6 @@ export class BarChartComponent implements OnInit {
     @Inject(PLATFORM_ID) private platformId: object,
     private expensesService: ExpensesService,
     private categoriesService: CategoriesService,
-    private authService: AuthService,
     private router: Router
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -62,48 +60,35 @@ export class BarChartComponent implements OnInit {
       if (!isInitial) this.fetchExpensesAndIncome();
     });
 
-    this.authService
-      .getIsAuthenticatedListener()
-      .then((observable) => {
-        this.expensesSubscription = observable.subscribe(
-          (currentUserResult) => {
-            if (!currentUserResult.isLoggedIn) {
-              this.router.navigate(['/auth']);
-              return;
-            }
-            if (!this.data?.bookletId) {
-              console.error('Error: bookletId is undefined');
-              return;
-            }
+    this.expensesService.getCombinedData().subscribe(({ data, isAuthenticated }) => {
+      if (!isAuthenticated) {
+        this.router.navigate(['/auth']);
+        return;
+      }
 
-            this.categoriesService
-              .getCategoriesListener(this.data?.bookletId ?? '')
-              .then((observable) => {
-                this.categoriesSubscription = observable.subscribe(
-                  (categories) => {
-                    this.categories = categories;
-                  }
-                );
-              })
-              .catch((error) => {
-                console.error('Error fetching categories:', error);
-              });
+      if (!data?.bookletId) {
+        console.error('Error: bookletId is undefined');
+        return;
+      }
 
-            this.fetchExpensesAndIncome();
-          }
-        );
-      })
-      .catch((error) => {
-        console.error('Error:', error);
+      this.fetchCategories(data.bookletId);
+      this.fetchExpensesAndIncome();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.expensesSubscription.unsubscribe();
+    this.categoriesSubscription.unsubscribe();
+  }
+
+  private fetchCategories(bookletId: string) {
+    this.categoriesService.getCategoriesListener(bookletId).then((observable) => {
+      this.categoriesSubscription = observable.subscribe((categories) => {
+        this.categories = categories;
       });
-
-    this.barChartData = {
-      labels: ['2006', '2007', '2008', '2009', '2010', '2011', '2012'],
-      datasets: [
-        { data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A' },
-        { data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B' },
-      ],
-    };
+    }).catch((error) => {
+      console.error('Error fetching categories:', error);
+    });
   }
 
   fetchExpensesAndIncome(): void {
@@ -152,8 +137,8 @@ export class BarChartComponent implements OnInit {
           this.barChartData = {
             labels: labels,
             datasets: [
-              { data: spentData, label: 'Spent' },
-              { data: receivedData, label: 'Received' },
+              { data: spentData, label: 'Uitgaven' },
+              { data: receivedData, label: 'Inkomsten' },
             ],
           };
         });
