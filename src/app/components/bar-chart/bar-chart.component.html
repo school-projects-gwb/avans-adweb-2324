@@ -1,7 +1,9 @@
-<div style="display: block;">
-  <canvas baseChart
-    [data]="barChartData"
-    [options]="barChartOptions"
-    [type]="'bar'">
-  </canvas>
+<div *ngIf="isBrowser">
+<canvas baseChart
+        [data]="barChartData"
+        [options]="barChartOptions"
+        [plugins]="barChartPlugins"
+        [legend]="barChartLegend"
+        [type]="'bar'">
+</canvas>
 </div>

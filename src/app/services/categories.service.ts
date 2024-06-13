@@ -43,7 +43,6 @@ export class CategoriesService {
   async getCategoriesListener(
     bookletId: string
   ): Promise<Observable<Category[]>> {
-    console.log('Getting categories for booklet ID:', bookletId);
     return new Observable<Category[]>((observer) => {
       const categoriesQuery = query(
         collection(this.firestore, 'categories'),

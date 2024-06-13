@@ -10,7 +10,7 @@ import {
   ExpenseDialogResult,
 } from '../expense-create-dialog/expense-create-dialog.component';
 import { AuthService } from '../../services/auth.service';
-import { ExpensesService } from '../../services/expenses.service';
+import { ExpenseConfigData, ExpensesService } from '../../services/expenses.service';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { CategoryOverviewComponent } from '../category-overview/category-overview.component';
@@ -19,7 +19,6 @@ import { CategoriesService } from '../../services/categories.service';
 import { CdkDrag, CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
 import { LineGraphComponent } from '../line-graph/line-graph.component';
 import { BarChartComponent } from '../bar-chart/bar-chart.component';
-
 
 @Component({
   selector: 'app-expenses-income',
@@ -40,14 +39,17 @@ import { BarChartComponent } from '../bar-chart/bar-chart.component';
 })
 export class ExpensesIncomeComponent implements OnInit, OnDestroy {
   @Input() bookletId!: string;
+
   expenses: Expense[] = [];
   income: Expense[] = [];
-  newExpense: Partial<Expense> = {};
   expensesSubscription: Subscription = new Subscription();
+
   categories: Category[] = [];
   categoriesSubscription: Subscription = new Subscription();
+
   selectedMonth: number = new Date().getMonth();
   selectedYear: number = new Date().getFullYear();
+
   months = [
     { value: 0, name: 'Januari' },
     { value: 1, name: 'Februari' },
@@ -73,27 +75,11 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {}
 
-  async onDrop(event: CdkDragDrop<unknown[]>) {
-    const droppedItem = event.item.data;
-    if (!droppedItem) return;
-
-    const dropIndex = (event.currentIndex == 0 ? 1 : event.currentIndex) - 1;
-
-    const isExpense = event.container.id === 'expense-component';
-    const target = isExpense
-      ? this.expenses[dropIndex]
-      : this.income[dropIndex];
-
-    if (!target) return;
-
-    target.categoryId = droppedItem.id;
-    await this.expensesService.updateExpense(target);
-  }
-
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       this.bookletId = params.get('id') || '';
     });
+
     this.authService
       .getIsAuthenticatedListener()
       .then((observable) => {
@@ -103,10 +89,13 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
               this.router.navigate(['/auth']);
               return;
             }
+            
             if (!this.bookletId) {
               console.error('Error: bookletId is undefined');
               return;
             }
+
+            this.updateExpenseConfigData();
 
             this.categoriesService
               .getCategoriesListener(this.bookletId)
@@ -134,8 +123,36 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
     this.expensesSubscription.unsubscribe();
   }
 
+  async onDrop(event: CdkDragDrop<unknown[]>) {
+    const droppedItem = event.item.data;
+    if (!droppedItem) return;
+
+    const dropIndex = (event.currentIndex == 0 ? 1 : event.currentIndex) - 1;
+
+    const isExpense = event.container.id === 'expense-component';
+    const target = isExpense
+      ? this.expenses[dropIndex]
+      : this.income[dropIndex];
+
+    if (!target) return;
+
+    target.categoryId = droppedItem.id;
+    await this.expensesService.updateExpense(target);
+  }
+
   onDateChange(): void {
+    this.updateExpenseConfigData();
     this.fetchExpensesAndIncome();
+  }
+
+  private updateExpenseConfigData() {
+    const data: ExpenseConfigData = {
+      bookletId: this.bookletId,
+      month: this.selectedMonth,
+      year: this.selectedYear,
+    };
+
+    this.expensesService.updateExpenseConfigData(data);
   }
 
   fetchExpensesAndIncome(): void {
@@ -148,13 +165,15 @@ export class ExpensesIncomeComponent implements OnInit, OnDestroy {
       .then((observable) => {
         this.expensesSubscription = observable.subscribe((expenses) => {
           const mappedExpenses = expenses.map((expense) => {
-            const category = this.categories.find(c => c.id === expense.categoryId);
+            const category = this.categories.find(
+              (c) => c.id === expense.categoryId
+            );
             return {
               ...expense,
-              categoryName: category ? category.name : '/'
+              categoryName: category ? category.name : '/',
             };
           });
-    
+
           // Filter the mapped expenses into income and non-income
           this.expenses = mappedExpenses.filter((expense) => !expense.isIncome);
           this.income = mappedExpenses.filter((expense) => expense.isIncome);

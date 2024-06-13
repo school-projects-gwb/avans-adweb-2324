@@ -1,6 +1,10 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { BaseChartDirective } from 'ng2-charts';
+import {
+  BaseChartDirective,
+  provideCharts,
+  withDefaultRegisterables,
+} from 'ng2-charts';
 import { ExpensesService } from '../../services/expenses.service';
 import { CommonModule } from '@angular/common';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
@@ -9,25 +13,23 @@ import { ChartConfiguration, ChartOptions } from 'chart.js';
   selector: 'app-line-graph',
   standalone: true,
   imports: [CommonModule, BaseChartDirective],
+  providers: [provideCharts(withDefaultRegisterables())],
   templateUrl: './line-graph.component.html',
-  styleUrls: ['./line-graph.component.css']
+  styleUrls: ['./line-graph.component.css'],
 })
 export class LineGraphComponent implements OnInit {
-  isBrowser: boolean;
+  isBrowser: boolean = true;
+  title = 'ng2-charts-demo';
+
   public lineChartData: ChartConfiguration<'line'>['data'] = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-      {
-        data: [],
-        label: 'Series A',
-        fill: true,
-        tension: 0.5
-      }
-    ]
+    datasets: []
   };
+
   public lineChartOptions: ChartOptions<'line'> = {
-    responsive: true
+    responsive: false,
   };
+
+  public lineChartLegend = true;
 
   constructor(
     private expensesService: ExpensesService,
@@ -37,20 +39,18 @@ export class LineGraphComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.isBrowser) {
-      console.log('LineGraphComponent initialized');
-      this.generateRandomData();
-    }
-  }
-
-  generateRandomData() {
-    const data = [];
-    const labels = this.lineChartData.labels;
-    if (labels) {
-      for (let i = 0; i < labels.length; i++) {
-        data.push(Math.floor(Math.random() * 100));
-      }
-      this.lineChartData.datasets[0].data = data;
-    }
+    this.lineChartData = {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    datasets: [
+      {
+        data: [65, 59, 80, 81, 56, 55, 40],
+        label: 'Series A',
+        fill: true,
+        tension: 0.5,
+        borderColor: 'black',
+        backgroundColor: 'rgba(255,0,0,0.3)',
+      },
+    ],
+  };
   }
 }
