@@ -11,6 +11,10 @@
   <div class="flex flex-row">
     <div class="w-2/3 mr-8">
       <div class="mt-8">
+        <span>Bar Chart</span>
+        <app-bar-chart></app-bar-chart>
+        <span>Line Graph</span>
+        <app-line-graph></app-line-graph>
         <button (click)="addExpenseOrIncome()" class="button mt-4 text-md w-full">Uitgave of inkomen Toevoegen</button>
         <h3 class="text-xl font-bold mb-4">Uitgaven</h3>
         <ul class="bg-background p-6 text-dark rounded-xl container-border" [id]="'expense-component'" cdkDropList (cdkDropListDropped)="onDrop($event)">
@@ -68,9 +72,7 @@
           </li>
         </ul>
       </div>
-      
-      <app-line-graph></app-line-graph>
-      
+            
     </div>
     
     <div class="w-1/3">

@@ -18,6 +18,7 @@ import { Category } from '../../models/category.models';
 import { CategoriesService } from '../../services/categories.service';
 import { CdkDrag, CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
 import { LineGraphComponent } from '../line-graph/line-graph.component';
+import { BarChartComponent } from '../bar-chart/bar-chart.component';
 
 
 @Component({
@@ -34,6 +35,7 @@ import { LineGraphComponent } from '../line-graph/line-graph.component';
     CdkDropList,
     CdkDrag,
     LineGraphComponent,
+    BarChartComponent,
   ],
 })
 export class ExpensesIncomeComponent implements OnInit, OnDestroy {

@@ -9,6 +9,8 @@ import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { environment } from '../environments/environment';
+import { provideCharts } from 'ng2-charts';
+import { BarController, LineController, Legend, Colors } from 'chart.js';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,5 +26,6 @@ export const appConfig: ApplicationConfig = {
       )
     ),
     importProvidersFrom(provideAuth(() => getAuth())),
+    provideCharts({ registerables: [BarController, LineController, Legend, Colors] }),
   ],
 };
