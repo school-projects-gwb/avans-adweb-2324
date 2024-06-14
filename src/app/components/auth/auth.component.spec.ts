@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthComponent } from './auth.component';
 import { AuthService } from '../../services/auth.service';
@@ -28,7 +33,7 @@ class MockFirestore {}
 describe('AuthComponent', () => {
   let component: AuthComponent;
   let fixture: ComponentFixture<AuthComponent>;
-  
+
   let router: Router;
 
   beforeEach(async () => {
@@ -38,18 +43,18 @@ describe('AuthComponent', () => {
         MatRadioModule,
         MatInputModule,
         BrowserAnimationsModule,
-        AuthComponent
+        AuthComponent,
       ],
       providers: [
         { provide: AuthService, useClass: MockAuthService },
         { provide: Router, useClass: MockRouter },
         { provide: Firestore, useClass: MockFirestore },
-      ]
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AuthComponent);
     component = fixture.componentInstance;
-    
+
     router = TestBed.inject(Router);
     fixture.detectChanges();
   });

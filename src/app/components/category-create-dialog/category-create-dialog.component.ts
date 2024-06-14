@@ -29,11 +29,8 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatNativeDateModule,
     MatDatepickerModule,
   ],
-  providers: [  
-    MatDatepickerModule,  
-  ],
+  providers: [MatDatepickerModule],
   templateUrl: './category-create-dialog.component.html',
-  styleUrl: './category-create-dialog.component.css',
 })
 export class CategoryCreateDialogComponent implements OnInit {
   private backupCategory: Partial<Category> = { ...this.data.category };

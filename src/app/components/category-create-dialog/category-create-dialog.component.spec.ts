@@ -1,5 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CategoryCreateDialogComponent, CategoryDialogData } from './category-create-dialog.component';
+import {
+  CategoryCreateDialogComponent,
+  CategoryDialogData,
+} from './category-create-dialog.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -14,13 +17,13 @@ describe('CategoryCreateDialogComponent', () => {
       category: {
         name: 'Test Category',
         budget: 100,
-        targetDate: new Date('2024-06-11T06:45:04.000Z')
+        targetDate: new Date('2024-06-11T06:45:04.000Z'),
       },
-      enableDelete: false
+      enableDelete: false,
     };
 
     const mockDialogRef = {
-      close: jasmine.createSpy('close')
+      close: jasmine.createSpy('close'),
     };
 
     await TestBed.configureTestingModule({
@@ -31,8 +34,8 @@ describe('CategoryCreateDialogComponent', () => {
       ],
       providers: [
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
-        { provide: MatDialogRef, useValue: mockDialogRef }
-      ]
+        { provide: MatDialogRef, useValue: mockDialogRef },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CategoryCreateDialogComponent);
@@ -69,8 +72,8 @@ describe('CategoryCreateDialogComponent', () => {
       category: {
         name: 'Test Category',
         budget: 100,
-        targetDate: new Date('2024-06-11T06:45:04.000Z')
-      }
+        targetDate: new Date('2024-06-11T06:45:04.000Z'),
+      },
     });
   });
 

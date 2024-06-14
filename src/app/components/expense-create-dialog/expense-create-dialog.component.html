@@ -23,7 +23,10 @@
         <mat-label>Categorie</mat-label>
         <mat-select formControlName="categoryId">
           <mat-option value="">Geen categorie</mat-option>
-          <mat-option *ngFor="let category of data.categories" [value]="category.id">
+          <mat-option
+            *ngFor="let category of data.categories"
+            [value]="category.id"
+          >
             {{ category.name }}
           </mat-option>
         </mat-select>
@@ -34,9 +37,18 @@
   </div>
   <div class="mt-8 flex flex-col justify-center">
     <button mat-button (click)="save()" class="button w-full">Opslaan</button>
-    <button mat-button (click)="cancel()" class="mt-4 underline">Annuleren</button>
+    <button mat-button (click)="cancel()" class="mt-4 underline">
+      Annuleren
+    </button>
     <div class="flex justify-center mt-4 border-t-2" *ngIf="data.enableDelete">
-      <button mat-button aria-label="Verwijderen" class="text-red-600 mt-4" [mat-dialog-close]="{ task: data.expense, delete: true }">Verwijderen</button>
+      <button
+        mat-button
+        aria-label="Verwijderen"
+        class="text-red-600 mt-4"
+        [mat-dialog-close]="{ task: data.expense, delete: true }"
+      >
+        Verwijderen
+      </button>
     </div>
   </div>
 </div>

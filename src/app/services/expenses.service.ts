@@ -6,7 +6,6 @@ import {
   addDoc,
   collection,
   doc,
-  getDoc,
   onSnapshot,
   query,
   where,
@@ -46,31 +45,9 @@ export class ExpensesService {
     return this.expenseConfigDataSource.value;
   }
 
-  private async validateBookletOwnership(bookletId: string): Promise<void> {
-    const bookletRef = doc(this.firestore, `booklets/${bookletId}`);
-
-    const bookletSnap = await getDoc(bookletRef);
-    if (!bookletSnap.exists()) {
-      console.error('Booklet not found:', bookletId);
-      throw new Error('Booklet not found');
-    }
-    const bookletData = bookletSnap.data();
-    console.log('Booklet data:', bookletData);
-
-    const currentUser = await this.authService.getAuthenticatedUserId();
-    console.log('Current user:', currentUser);
-
-    if (bookletData['userId'] !== currentUser) {
-      console.error('User not authorized:', currentUser);
-      throw new Error('User not authorized');
-    }
-  }
-
   async createExpense(expense: Expense): Promise<Expense> {
     console.log('Creating expense:', expense);
     try {
-      await this.validateBookletOwnership(expense.bookletId);
-
       const ref = await addDoc(
         collection(this.firestore, 'expenses'),
         expenseConverter.toFirestore(expense)

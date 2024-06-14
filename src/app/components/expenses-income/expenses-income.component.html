@@ -7,92 +7,163 @@
     />
     <h2 class="title ml-8">Inkomsten & uitgaven</h2>
   </div>
-  
+
   <div class="flex flex-row max-h-screen">
     <div class="w-2/3 mr-8 max-h-screen overflow-y-scroll">
       <div class="mt-8">
-        <button (click)="addExpenseOrIncome()" class="button mt-4 text-md w-full">Data toevoegen</button>
+        <button
+          (click)="addExpenseOrIncome()"
+          class="button mt-4 text-md w-full"
+        >
+          Data toevoegen
+        </button>
       </div>
-      
-      <div class="mt-8">
-        <h3 class="text-xl font-bold mb-4">Inkomsten</h3>
-        <ul class="bg-background p-6 text-dark rounded-xl container-border" [id]="'income-component'" cdkDropList (cdkDropListDropped)="onDrop($event)">
+
+      <div class="mt-8" *ngIf="income.length > 0 || expenses.length > 0">
+        <h3 *ngIf="income.length > 0" class="text-xl font-bold mb-4">
+          Inkomsten
+        </h3>
+        <ul
+          *ngIf="income.length > 0"
+          class="bg-background p-6 text-dark rounded-xl container-border"
+          [id]="'income-component'"
+          cdkDropList
+          (cdkDropListDropped)="onDrop($event)"
+        >
           <li *ngFor="let incomeItem of income" class="mt-4" cdkDrag>
             <div class="flex flex-row mb-4 expense-item" data-emoji="💰">
               <div>
                 <span class="font-bold text-lg">{{ incomeItem.name }}</span>
-                <br>
-                <span class="text-gray-400">{{ incomeItem.date | date:'mediumDate' }}</span>
-                <br>
-                <span class="text-primary p-1 border border-border rounded-xl font-semibold mt-1 inline-block">{{ incomeItem.categoryName }}</span>
+                <br />
+                <span class="text-gray-400">{{
+                  incomeItem.date | date : "mediumDate"
+                }}</span>
+                <br />
+                <span
+                  class="text-primary p-1 border border-border rounded-xl font-semibold mt-1 inline-block"
+                  >{{ incomeItem.categoryName }}</span
+                >
               </div>
               <div class="ml-auto">
                 <span class="text-green-500">
                   <b>€{{ incomeItem.amount }}</b>
                 </span>
                 <button (click)="editExpense(incomeItem)">
-                  <span class="material-icons text-light ml-2 text-2xl">edit</span>
+                  <span class="material-icons text-light ml-2 text-2xl"
+                    >edit</span
+                  >
                 </button>
                 <button (click)="deleteExpense(incomeItem.id)">
-                  <span class="material-icons text-light ml-2 text-2xl">delete</span>
+                  <span class="material-icons text-light ml-2 text-2xl"
+                    >delete</span
+                  >
                 </button>
               </div>
             </div>
-            <hr class="expense-divider">
+            <hr class="expense-divider" />
           </li>
         </ul>
-        <h3 class="text-xl font-bold mb-4">Uitgaven</h3>
-        <ul class="bg-background p-6 text-dark rounded-xl container-border" [id]="'expense-component'" cdkDropList (cdkDropListDropped)="onDrop($event)">
+
+        <h3 *ngIf="expenses.length > 0" class="text-xl font-bold mb-4">
+          Uitgaven
+        </h3>
+        <ul
+          *ngIf="expenses.length > 0"
+          class="bg-background p-6 text-dark rounded-xl container-border"
+          [id]="'expense-component'"
+          cdkDropList
+          (cdkDropListDropped)="onDrop($event)"
+        >
           <li *ngFor="let expense of expenses" class="mt-4" cdkDrag>
             <div class="flex flex-row mb-4 expense-item" data-emoji="💸">
               <div>
                 <span class="font-bold text-lg">{{ expense.name }}</span>
-                <br>
-                <span class="text-gray-400">{{ expense.date | date:'mediumDate' }}</span>
-                <br>
-                <span class="text-primary p-1 border border-border rounded-xl font-semibold mt-1 inline-block">{{ expense.categoryName }}</span>
+                <br />
+                <span class="text-gray-400">{{
+                  expense.date | date : "mediumDate"
+                }}</span>
+                <br />
+                <span
+                  class="text-primary p-1 border border-border rounded-xl font-semibold mt-1 inline-block"
+                  >{{ expense.categoryName }}</span
+                >
               </div>
               <div class="ml-auto">
                 <span class="text-red-500">
                   <b>€{{ expense.amount }}</b>
                 </span>
                 <button (click)="editExpense(expense)">
-                  <span class="material-icons text-light ml-2 text-2xl">edit</span>
+                  <span class="material-icons text-light ml-2 text-2xl"
+                    >edit</span
+                  >
                 </button>
                 <button (click)="deleteExpense(expense.id)">
-                  <span class="material-icons text-light ml-2 text-2xl">delete</span>
+                  <span class="material-icons text-light ml-2 text-2xl"
+                    >delete</span
+                  >
                 </button>
               </div>
             </div>
-            <hr class="expense-divider">
+            <hr class="expense-divider" />
           </li>
         </ul>
-        <div>
+
+        <div *ngIf="income.length > 0 || expenses.length > 0">
           <h3 class="text-xl font-bold mb-4">Grafiekweergave</h3>
           <app-bar-chart></app-bar-chart>
           <app-line-graph></app-line-graph>
         </div>
       </div>
-            
+
+      <div class="mt-8" *ngIf="income.length === 0 && expenses.length === 0">
+        <p class="text-lg text-background font-bold">
+          Er zijn nog geen inkomsten & uitgaven voor deze periode.
+        </p>
+      </div>
     </div>
-    
+
     <div class="w-1/3 max-h-screen overflow-y-scroll">
-      <h3 class="text-xl font-bold mb-4">Filter of datum</h3>
+      <h3 class="text-xl font-bold mb-4">Filter op datum</h3>
       <div class="bg-background p-4 rounded-xl container-border mb-8">
         <div class="mb-2">
-          <label for="selectedMonth" class="block text-sm font-medium text-gray-700">Maand:</label>
-          <select id="selectedMonth" [(ngModel)]="selectedMonth" (change)="onDateChange()" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+          <label
+            for="selectedMonth"
+            class="block text-sm font-medium text-gray-700"
+            >Maand:</label
+          >
+          <select
+            id="selectedMonth"
+            [(ngModel)]="selectedMonth"
+            (change)="onDateChange()"
+            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          >
+            <option *ngFor="let month of months" [value]="month.value">
+              {{ month.name }}
+            </option>
           </select>
         </div>
         <div>
-          <label for="selectedYear" class="block text-sm font-medium text-gray-700">Jaar:</label>
-          <select id="selectedYear" [(ngModel)]="selectedYear" (change)="onDateChange()" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-            <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+          <label
+            for="selectedYear"
+            class="block text-sm font-medium text-gray-700"
+            >Jaar:</label
+          >
+          <select
+            id="selectedYear"
+            [(ngModel)]="selectedYear"
+            (change)="onDateChange()"
+            class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          >
+            <option *ngFor="let year of years" [value]="year">
+              {{ year }}
+            </option>
           </select>
         </div>
       </div>
-      <app-categories [cdkDropListConnectedTo]="['expense-component', 'income-component']" cdkDropList></app-categories>
+      <app-categories
+        [cdkDropListConnectedTo]="['expense-component', 'income-component']"
+        cdkDropList
+      ></app-categories>
     </div>
   </div>
 </section>

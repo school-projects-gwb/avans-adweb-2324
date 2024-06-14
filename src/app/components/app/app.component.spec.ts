@@ -26,7 +26,7 @@ describe('AppComponent', () => {
         { provide: Auth, useValue: mockAngularFireAuth },
       ],
     }).compileComponents();
-    
+
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
   });

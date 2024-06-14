@@ -131,6 +131,9 @@ export class BarChartComponent implements OnInit, OnDestroy {
             {} as CategoryTotals
           );
 
+          if (!categoryTotals['/'])
+            categoryTotals['/'] = { spent: 0, received: 0 };
+
           mappedExpenses.forEach((expense) => {
             if (expense.isIncome) {
               categoryTotals[expense.categoryName].received += expense.amount;

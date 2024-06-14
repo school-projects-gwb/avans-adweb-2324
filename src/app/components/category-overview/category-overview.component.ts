@@ -40,24 +40,26 @@ export class CategoryOverviewComponent implements OnInit, OnDestroy {
     this.route.paramMap.subscribe((params) => {
       this.bookletId = params.get('id') || '';
     });
-    
+
     if (!this.bookletId) {
       console.error('Error: bookletId is undefined');
       return;
     }
 
-    this.categoriesSubscription = this.categoriesService.getCombinedUserAndCategories(this.bookletId).subscribe({
-      next: ({ currentUserResult, categories }) => {
-        if (!currentUserResult.isLoggedIn) {
-          this.router.navigate(['/auth']);
-          return;
-        }
-        this.categories = categories;
-      },
-      error: (error) => {
-        console.error('Error:', error);
-      }
-    });
+    this.categoriesSubscription = this.categoriesService
+      .getCombinedUserAndCategories(this.bookletId)
+      .subscribe({
+        next: ({ currentUserResult, categories }) => {
+          if (!currentUserResult.isLoggedIn) {
+            this.router.navigate(['/auth']);
+            return;
+          }
+          this.categories = categories;
+        },
+        error: (error) => {
+          console.error('Error:', error);
+        },
+      });
   }
 
   onDragStart(event: Event) {

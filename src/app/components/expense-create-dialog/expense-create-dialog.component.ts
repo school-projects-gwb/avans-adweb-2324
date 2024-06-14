@@ -1,7 +1,16 @@
 import { Component, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { Expense } from '../../models/expense.models';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialogModule,
+} from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,7 +19,7 @@ import { MatNativeDateModule, MatOption } from '@angular/material/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NgFor, NgIf } from '@angular/common';
 import { Category } from '../../models/category.models';
-import {MatSelectModule} from '@angular/material/select';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-expense-create-dialog',
@@ -30,7 +39,7 @@ import {MatSelectModule} from '@angular/material/select';
     MatDialogModule,
   ],
   templateUrl: './expense-create-dialog.component.html',
-  providers: [MatDatepickerModule, MatNativeDateModule]
+  providers: [MatDatepickerModule, MatNativeDateModule],
 })
 export class ExpenseCreateDialogComponent {
   formGroup: FormGroup;
@@ -43,10 +52,13 @@ export class ExpenseCreateDialogComponent {
   ) {
     this.formGroup = this.fb.group({
       name: [this.data.expense.name, [Validators.required]],
-      amount: [this.data.expense.amount, [Validators.required, Validators.min(0.01)]],
+      amount: [
+        this.data.expense.amount,
+        [Validators.required, Validators.min(0.01)],
+      ],
       date: [this.data.expense.date || new Date(), Validators.required],
       isIncome: [this.data.expense.isIncome ?? false],
-      categoryId: [this.data.expense?.categoryId || '']
+      categoryId: [this.data.expense?.categoryId || ''],
     });
   }
 

@@ -11,7 +11,6 @@ import { NgFor, NgIf } from '@angular/common';
   standalone: true,
   imports: [NgFor, NgIf],
   templateUrl: './booklet-archive.component.html',
-  styleUrl: './booklet-archive.component.css',
 })
 export class BookletArchiveComponent implements OnInit {
   currentUserSubscription: Subscription = new Subscription();
@@ -57,7 +56,7 @@ export class BookletArchiveComponent implements OnInit {
   async openOverview(): Promise<void> {
     this.router.navigate(['/']);
   }
-  
+
   async unarchiveBooklet(booklet: Booklet): Promise<void> {
     await this.bookletService.unarchiveBooklet(booklet);
   }

@@ -1,9 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { of } from 'rxjs';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
+import { of, Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { CategoryOverviewComponent } from './category-overview.component';
 import { CategoriesService } from '../../services/categories.service';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, CurrentUserResult } from '../../services/auth.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
@@ -31,12 +37,42 @@ class MockCategoriesService {
   deleteCategory(category: Category) {
     return Promise.resolve();
   }
+
+  getCombinedUserAndCategories(
+    bookletId: string
+  ): Observable<{
+    currentUserResult: CurrentUserResult;
+    categories: Category[];
+  }> {
+    const mockCurrentUserResult: CurrentUserResult = {
+      isLoggedIn: true,
+      email: 'mock@example.com',
+      userId: 'mockUserId',
+    };
+
+    const mockCategories: Category[] = [
+      {
+        name: 'Category 1',
+        bookletId,
+        budget: 100,
+        targetDate: new Date(),
+        id: '',
+        totalAmount: 100,
+      },
+    ];
+
+    return of(mockCurrentUserResult).pipe(
+      switchMap((currentUserResult) =>
+        of({ currentUserResult, categories: mockCategories })
+      )
+    );
+  }
 }
 
 class MockMatDialog {
   open() {
     return {
-      afterClosed: () => of(undefined)
+      afterClosed: () => of(undefined),
     };
   }
 }
@@ -60,11 +96,11 @@ describe('CategoryOverviewComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             paramMap: of({
-              get: (key: string) => 'testBookletId'
-            })
-          }
-        }
-      ]
+              get: (key: string) => 'testBookletId',
+            }),
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CategoryOverviewComponent);
@@ -87,7 +123,12 @@ describe('CategoryOverviewComponent', () => {
   }));
 
   it('should navigate to login if user is not authenticated', fakeAsync(() => {
-    spyOn(authService, 'getIsAuthenticatedListener').and.returnValue(Promise.resolve(of({ isLoggedIn: false, userId: '', email: '' })));
+    spyOn(categoriesService, 'getCombinedUserAndCategories').and.returnValue(
+      of({
+        currentUserResult: { isLoggedIn: false, userId: '', email: '' },
+        categories: [],
+      })
+    );
     spyOn(router, 'navigate');
     component.ngOnInit();
     tick();
@@ -95,7 +136,26 @@ describe('CategoryOverviewComponent', () => {
   }));
 
   it('should fetch categories on init', fakeAsync(() => {
-    spyOn(categoriesService, 'getCategoriesListener').and.returnValue(Promise.resolve(of([{ name: 'Category 1', bookletId: '', budget: 10, targetDate: new Date(), expenses: [], id: '', totalAmount: 100}])));
+    spyOn(categoriesService, 'getCombinedUserAndCategories').and.returnValue(
+      of({
+        currentUserResult: {
+          userId: 'mockUserId',
+          email: 'mock@example.com',
+          isLoggedIn: true,
+        },
+        categories: [
+          {
+            name: 'Category 1',
+            bookletId: 'testBookletId',
+            budget: 100,
+            targetDate: new Date(),
+            expenses: [],
+            id: '',
+            totalAmount: 100,
+          },
+        ],
+      })
+    );
     component.ngOnInit();
     tick();
     expect(component.categories.length).toBe(1);
@@ -110,7 +170,14 @@ describe('CategoryOverviewComponent', () => {
 
   it('should open dialog to edit category', () => {
     const dialogSpy = spyOn(dialog, 'open').and.callThrough();
-    const category: Category = { name: 'Category 1', budget: 100, targetDate: new Date(), bookletId: 'testBookletId', id: '', totalAmount: 100 };
+    const category: Category = {
+      name: 'Category 1',
+      budget: 100,
+      targetDate: new Date(),
+      bookletId: 'testBookletId',
+      id: '',
+      totalAmount: 100,
+    };
     component.editCategory(category);
     expect(dialogSpy).toHaveBeenCalled();
   });

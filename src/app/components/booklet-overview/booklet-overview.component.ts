@@ -26,7 +26,6 @@ import { AuthService } from '../../services/auth.service';
     FormsModule,
   ],
   templateUrl: './booklet-overview.component.html',
-  styleUrls: ['./booklet-overview.component.css'],
 })
 export class BookletOverviewComponent implements OnInit, OnDestroy {
   combinedSubscription: Subscription = new Subscription();
@@ -41,18 +40,20 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.combinedSubscription = this.bookletService.getCombinedUserAndBooklets().subscribe({
-      next: ({ currentUserResult, booklets }) => {
-        if (!currentUserResult.isLoggedIn) {
-          this.router.navigate(['/auth']);
-          return;
-        }
-        this.booklets = booklets;
-      },
-      error: (error) => {
-        console.error('Error:', error);
-      }
-    });
+    this.combinedSubscription = this.bookletService
+      .getCombinedUserAndBooklets()
+      .subscribe({
+        next: ({ currentUserResult, booklets }) => {
+          if (!currentUserResult.isLoggedIn) {
+            this.router.navigate(['/auth']);
+            return;
+          }
+          this.booklets = booklets;
+        },
+        error: (error) => {
+          console.error('Error:', error);
+        },
+      });
   }
 
   async addBooklet(): Promise<void> {
@@ -67,7 +68,10 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
       .subscribe(async (result: BookletDialogResult | undefined) => {
         if (!result) return;
         result.booklet.userId = this.authService.getAuthenticatedUserId();
-        await this.bookletService.createBooklet(result.booklet, this.authService.getAuthenticatedUserEmail());
+        await this.bookletService.createBooklet(
+          result.booklet,
+          this.authService.getAuthenticatedUserEmail()
+        );
       });
   }
 
@@ -91,7 +95,7 @@ export class BookletOverviewComponent implements OnInit, OnDestroy {
       .afterClosed()
       .subscribe((result: BookletDialogResult | undefined) => {
         if (!result) return;
-        
+
         booklet.name = result.booklet.name;
         booklet.description = result.booklet.description;
 

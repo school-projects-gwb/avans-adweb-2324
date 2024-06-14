@@ -8,7 +8,7 @@ import { LoggedInUserComponent } from '../logged-in-user/logged-in-user.componen
   standalone: true,
   imports: [RouterOutlet, BookletOverviewComponent, LoggedInUserComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
   title = 'huishoudboekje';

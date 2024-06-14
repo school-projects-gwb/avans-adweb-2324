@@ -18,9 +18,14 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-booklet-create-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatInputModule, MatDialogModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatDialogModule,
+  ],
   templateUrl: './booklet-create-dialog.component.html',
-  styleUrl: './booklet-create-dialog.component.css',
 })
 export class BookletCreateDialogComponent implements OnInit {
   private backupBooklet: Partial<Booklet> = { ...this.data.booklet };
@@ -39,9 +44,7 @@ export class BookletCreateDialogComponent implements OnInit {
         this.data.booklet?.name || '',
         [Validators.required, Validators.minLength(1)],
       ],
-      description: [
-        this.data.booklet?.description || ''
-      ],
+      description: [this.data.booklet?.description || ''],
     });
 
     this.userAccessFormGroup = this.formBuilder.group({
@@ -54,9 +57,9 @@ export class BookletCreateDialogComponent implements OnInit {
 
   save(): void {
     if (!this.basicInfoFormGroup.valid) return;
-    
+
     this.dialogRef.close({
-      booklet: this.basicInfoFormGroup.value
+      booklet: this.basicInfoFormGroup.value,
     });
   }
 
@@ -64,15 +67,15 @@ export class BookletCreateDialogComponent implements OnInit {
     this.dialogRef.close({
       booklet: {
         ...this.data.booklet,
-        ...this.basicInfoFormGroup.value
+        ...this.basicInfoFormGroup.value,
       },
-      delete: true
+      delete: true,
     });
   }
 
   cancel(): void {
     this.dialogRef.close({
-      booklet: this.basicInfoFormGroup.value
+      booklet: this.basicInfoFormGroup.value,
     });
   }
 

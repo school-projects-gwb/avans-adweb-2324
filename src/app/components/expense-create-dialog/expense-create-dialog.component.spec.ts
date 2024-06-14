@@ -71,7 +71,7 @@ describe('ExpenseCreateDialogComponent', () => {
       amount: 100,
       date: mockDialogData.expense.date,
       isIncome: false,
-      categoryId: '1'
+      categoryId: '1',
     });
   });
 
@@ -89,11 +89,11 @@ describe('ExpenseCreateDialogComponent', () => {
         amount: 100,
         date: mockDialogData.expense.date,
         isIncome: false,
-        categoryId: '1'
+        categoryId: '1',
       },
     });
   });
-  
+
   it('should close the dialog on cancel', () => {
     component.cancel();
     expect(dialogRef.close).toHaveBeenCalled();

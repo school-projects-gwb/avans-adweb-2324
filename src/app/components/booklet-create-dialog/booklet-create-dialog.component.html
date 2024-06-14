@@ -1,10 +1,12 @@
-<div class="p-4 grid {{data.enableDelete ? 'grid-cols-2' : 'grid-cols-1'}}">
+<div class="p-4 grid {{ data.enableDelete ? 'grid-cols-2' : 'grid-cols-1' }}">
   <form [formGroup]="basicInfoFormGroup">
     <h3 class="font-bold text-dark">Basisinformatie</h3>
     <mat-form-field class="w-full mt-4">
       <mat-label>Naam</mat-label>
       <input matInput cdkFocusInitial formControlName="name" />
-      <mat-error *ngIf="basicInfoFormGroup.get('name')?.hasError('required')">Naam is verplicht</mat-error>
+      <mat-error *ngIf="basicInfoFormGroup.get('name')?.hasError('required')"
+        >Naam is verplicht</mat-error
+      >
     </mat-form-field>
 
     <mat-form-field class="w-full">
@@ -64,13 +66,7 @@
   </div>
   <div class="col-span-2">
     <div class="flex flex-col">
-      <button
-        mat-button
-        (click)="save()"
-        class="button"
-      >
-        Opslaan
-      </button>
+      <button mat-button (click)="save()" class="button">Opslaan</button>
       <button mat-button (click)="cancel()" class="mt-4 underline">
         Annuleren
       </button>
@@ -81,7 +77,8 @@
         mat-button
         aria-label="Archiveren"
         class="text-red-600 mt-4"
-        mat-button (click)="archive()"
+        mat-button
+        (click)="archive()"
       >
         Archiveren
       </button>

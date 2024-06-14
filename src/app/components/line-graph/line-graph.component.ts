@@ -1,11 +1,20 @@
-import { Component, OnInit, Inject, PLATFORM_ID, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Inject,
+  PLATFORM_ID,
+  OnDestroy,
+} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import {
   BaseChartDirective,
   provideCharts,
   withDefaultRegisterables,
 } from 'ng2-charts';
-import { ExpenseConfigData, ExpensesService } from '../../services/expenses.service';
+import {
+  ExpenseConfigData,
+  ExpensesService,
+} from '../../services/expenses.service';
 import { CommonModule } from '@angular/common';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { Expense } from '../expenses-income/expenses-income.component';
@@ -54,19 +63,21 @@ export class LineGraphComponent implements OnInit, OnDestroy {
       if (!isInitial) this.fetchExpensesAndIncome();
     });
 
-    this.expensesService.getCombinedData().subscribe(({ data, isAuthenticated }) => {
-      if (!isAuthenticated) {
-        this.router.navigate(['/auth']);
-        return;
-      }
+    this.expensesService
+      .getCombinedData()
+      .subscribe(({ data, isAuthenticated }) => {
+        if (!isAuthenticated) {
+          this.router.navigate(['/auth']);
+          return;
+        }
 
-      if (!data?.bookletId) {
-        console.error('Error: bookletId is undefined');
-        return;
-      }
+        if (!data?.bookletId) {
+          console.error('Error: bookletId is undefined');
+          return;
+        }
 
-      this.fetchExpensesAndIncome();
-    });
+        this.fetchExpensesAndIncome();
+      });
   }
 
   ngOnDestroy(): void {
@@ -98,7 +109,10 @@ export class LineGraphComponent implements OnInit, OnDestroy {
             }
           });
 
-          const labels = Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`);
+          const labels = Array.from(
+            { length: daysInMonth },
+            (_, i) => `${i + 1}`
+          );
 
           this.lineChartData = {
             labels: labels,

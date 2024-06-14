@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { of } from 'rxjs';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
+import { Observable, of, switchMap } from 'rxjs';
 import { BookletOverviewComponent } from './booklet-overview.component';
 import { BookletService } from '../../services/booklet.service';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, CurrentUserResult } from '../../services/auth.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
@@ -40,12 +45,28 @@ class MockBookletService {
   archiveBooklet(booklet: Booklet) {
     return Promise.resolve();
   }
+
+  getCombinedUserAndBooklets(
+    archived: boolean = false
+  ): Observable<{ currentUserResult: CurrentUserResult; booklets: Booklet[] }> {
+    const mockCurrentUserResult: CurrentUserResult = {
+      isLoggedIn: true,
+      email: 'mock@example.com',
+      userId: 'mockUserId',
+    };
+
+    return of(mockCurrentUserResult).pipe(
+      switchMap((currentUserResult) =>
+        of({ currentUserResult, booklets: [] })
+      )
+    );
+  }
 }
 
 class MockMatDialog {
   open() {
     return {
-      afterClosed: () => of(undefined)
+      afterClosed: () => of(undefined),
     };
   }
 }
@@ -53,12 +74,7 @@ class MockMatDialog {
 class MockFirestore {}
 
 const createMockBooklet = (): Booklet => {
-  return new Booklet(
-    '1',
-    'testUserId',
-    'Booklet 1',
-    ''
-  );
+  return new Booklet('1', 'testUserId', 'Booklet 1', '');
 };
 
 describe('BookletOverviewComponent', () => {
@@ -81,11 +97,11 @@ describe('BookletOverviewComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             paramMap: of({
-              get: (key: string) => 'testBookletId'
-            })
-          }
-        }
-      ]
+              get: (key: string) => 'testBookletId',
+            }),
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BookletOverviewComponent);
@@ -102,7 +118,12 @@ describe('BookletOverviewComponent', () => {
   });
 
   it('should navigate to login if user is not authenticated', fakeAsync(() => {
-    spyOn(authService, 'getIsAuthenticatedListener').and.returnValue(Promise.resolve(of({ userId: '', email: '', isLoggedIn: false })));
+    spyOn(bookletService, 'getCombinedUserAndBooklets').and.returnValue(
+      of({
+        currentUserResult: { userId: '', email: '', isLoggedIn: false },
+        booklets: [],
+      })
+    );
     spyOn(router, 'navigate');
     component.ngOnInit();
     tick();
@@ -110,7 +131,16 @@ describe('BookletOverviewComponent', () => {
   }));
 
   it('should fetch booklets on init', fakeAsync(() => {
-    spyOn(bookletService, 'getBookletListener').and.returnValue(Promise.resolve(of([createMockBooklet()]))); 
+    spyOn(bookletService, 'getCombinedUserAndBooklets').and.returnValue(
+      of({
+        currentUserResult: {
+          userId: 'testUserId',
+          email: 'test@example.com',
+          isLoggedIn: true,
+        },
+        booklets: [createMockBooklet()],
+      })
+    );
     component.ngOnInit();
     tick();
     expect(component.booklets.length).toBe(1);
@@ -126,7 +156,10 @@ describe('BookletOverviewComponent', () => {
   }));
 
   it('should unsubscribe on destroy', () => {
-    const subscriptionSpy = spyOn(component.currentUserSubscription, 'unsubscribe').and.callThrough();
+    const subscriptionSpy = spyOn(
+      component.combinedSubscription,
+      'unsubscribe'
+    ).and.callThrough();
     component.ngOnDestroy();
     expect(subscriptionSpy).toHaveBeenCalled();
   });

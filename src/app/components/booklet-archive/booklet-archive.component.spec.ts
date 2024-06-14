@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { of } from 'rxjs';
 import { BookletArchiveComponent } from './booklet-archive.component';
 import { BookletService } from '../../services/booklet.service';
@@ -35,8 +40,8 @@ describe('BookletArchiveComponent', () => {
       imports: [BookletArchiveComponent],
       providers: [
         { provide: AuthService, useClass: MockAuthService },
-        { provide: BookletService, useClass: MockBookletService }
-      ]
+        { provide: BookletService, useClass: MockBookletService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(BookletArchiveComponent);
@@ -52,7 +57,9 @@ describe('BookletArchiveComponent', () => {
   });
 
   it('should navigate to login if user is not authenticated', fakeAsync(() => {
-    spyOn(authService, 'getIsAuthenticatedListener').and.returnValue(Promise.resolve(of({ isLoggedIn: false, email: '', userId: ''})));
+    spyOn(authService, 'getIsAuthenticatedListener').and.returnValue(
+      Promise.resolve(of({ isLoggedIn: false, email: '', userId: '' }))
+    );
     spyOn(router, 'navigate');
     component.ngOnInit();
     tick();
@@ -60,7 +67,9 @@ describe('BookletArchiveComponent', () => {
   }));
 
   it('should fetch archived booklets on init', fakeAsync(() => {
-    spyOn(bookletService, 'getBookletListener').and.returnValue(Promise.resolve(of([new Booklet('1', '', 'Booklet 1', 'testUserId')])));
+    spyOn(bookletService, 'getBookletListener').and.returnValue(
+      Promise.resolve(of([new Booklet('1', '', 'Booklet 1', 'testUserId')]))
+    );
     component.ngOnInit();
     tick();
     expect(component.booklets.length).toBe(1);
@@ -74,7 +83,9 @@ describe('BookletArchiveComponent', () => {
   });
 
   it('should unarchive booklet', async () => {
-    spyOn(bookletService, 'unarchiveBooklet').and.returnValue(Promise.resolve());
+    spyOn(bookletService, 'unarchiveBooklet').and.returnValue(
+      Promise.resolve()
+    );
     const booklet = new Booklet('1', 'Booklet 1', '', 'testUserId');
     await component.unarchiveBooklet(booklet);
     expect(bookletService.unarchiveBooklet).toHaveBeenCalledWith(booklet);
